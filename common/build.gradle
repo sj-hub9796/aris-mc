@@ -1,5 +1,6 @@
 plugins {
     id 'org.jetbrains.kotlin.jvm'
+    id 'com.google.devtools.ksp'
 }
 architectury {
     common(rootProject.enabled_platforms.split(","))
@@ -13,7 +14,15 @@ dependencies {
     // We depend on fabric loader here to use the fabric @Environment annotations and get the mixin dependencies
     // Do NOT use other classes from fabric loader
     modImplementation "net.fabricmc:fabric-loader:${rootProject.fabric_loader_version}"
+
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8"
+
+    implementation "me.ddayo:aris.luagen"
+    ksp "me.ddayo:ap"
+}
+
+ksp {
+    arg("package_name", "me.ddayo.aris.lua.glue")
 }
 
 publishing {

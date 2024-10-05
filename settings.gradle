@@ -7,6 +7,8 @@ pluginManagement {
     }
     plugins {
         id 'org.jetbrains.kotlin.jvm' version '2.0.20'
+        id 'com.google.devtools.ksp' version '2.0.20-1.0.25'
+        id 'com.github.johnrengelman.shadow' version '7.1.2'
     }
 }
 plugins {
@@ -18,5 +20,7 @@ include("fabric-like")
 include("fabric")
 include("quilt")
 include("forge")
+
+includeBuild("aris.luagen")
 
 rootProject.name = "aris"

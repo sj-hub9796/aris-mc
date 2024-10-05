@@ -1,4 +1,4 @@
-package me.ddayo.fabriclike
+package me.ddayo.aris.fabriclike
 
 import me.ddayo.aris.Aris
 

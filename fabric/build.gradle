@@ -1,5 +1,5 @@
 plugins {
-    id "com.github.johnrengelman.shadow" version "7.1.2"
+    id 'com.github.johnrengelman.shadow'
     id 'org.jetbrains.kotlin.jvm'
 }
 
@@ -29,6 +29,10 @@ dependencies {
     common(project(path: ":fabric-like", configuration: "namedElements")) { transitive false }
     shadowCommon(project(path: ":fabric-like", configuration: "transformProductionFabric")) { transitive false }
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8"
+
+    implementation "me.ddayo:aris.luagen"
+    include "me.ddayo:aris.luagen"
+    runtimeOnly 'party.iroiro.luajava:luajit-platform:4.0.2:natives-desktop'
 }
 
 processResources {
