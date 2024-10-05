@@ -1,5 +1,6 @@
 package me.ddayo.aris.lua
 
+import me.ddayo.aris.client.gui.BaseScreen
 import me.ddayo.aris.lua.math.AreaBuilder
 import me.ddayo.aris.lua.math.Point
 import me.ddayo.aris.luagen.LuaFunction
@@ -13,6 +14,9 @@ object BaseFunction {
 
     @LuaFunction("create_point")
     fun create(x: Double, y: Double) = Point(x, y)
+
+    @LuaFunction("create_window")
+    fun createWindow() = BaseScreen()
 
     @LuaFunction("log_debug")
     fun debugLog(msg: String) = LogManager.getLogger().debug(msg)
