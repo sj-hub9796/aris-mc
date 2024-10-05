@@ -1,0 +1,46 @@
+{
+  "schema_version": 1,
+  "mixin": [
+    "aris.mixins.json",
+    "aris-common.mixins.json"
+  ],
+  "quilt_loader": {
+    "group": "${group}",
+    "id": "aris",
+    "version": "${version}",
+    "metadata": {
+      "name": "Project Aris",
+      "description": "Project Aris",
+      "contributors": {
+        "Me!": "Dayo"
+      },
+      "contact": {
+        "sources": "https://github.com/architectury/architectury-templates"
+      },
+      "icon": "assets/aris/icon.png"
+    },
+    "intermediate_mappings": "net.fabricmc:intermediary",
+    "entrypoints": {
+      "init": [
+        "me.ddayo.aris.quilt.ArisQuilt"
+      ]
+    },
+    "depends": [
+      {
+        "id": "quilt_loader",
+        "version": "*"
+      },
+      {
+        "id": "quilt_base",
+        "version": "*"
+      },
+      {
+        "id": "minecraft",
+        "version": ">=1.20.1"
+      }
+    ]
+  },
+  "minecraft": {
+    "environment": "*"
+  }
+}

@@ -1,0 +1,30 @@
+{
+  "schemaVersion": 1,
+  "id": "aris",
+  "version": "${version}",
+  "name": "Project Aris",
+  "description": "Project Aris",
+  "authors": [
+    "Dayo"
+  ],
+  "contact": {
+    "homepage": "https://ddayo.me/",
+    "sources": "https://github.com/dayo05/aris-mc"
+  },
+  "license": "TBD",
+  "icon": "assets/aris/icon.png",
+  "environment": "*",
+  "entrypoints": {
+    "main": [
+      "me.ddayo.aris.fabric.ArisFabric"
+    ]
+  },
+  "mixins": [
+    "aris.mixins.json",
+    "aris-common.mixins.json"
+  ],
+  "depends": {
+    "fabric": "*",
+    "minecraft": ">=1.20.1"
+  }
+}
