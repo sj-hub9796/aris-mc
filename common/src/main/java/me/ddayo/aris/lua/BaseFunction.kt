@@ -1,23 +1,12 @@
 package me.ddayo.aris.lua
 
-import me.ddayo.aris.client.gui.BaseScreen
-import me.ddayo.aris.lua.math.AreaBuilder
-import me.ddayo.aris.lua.math.Point
+import me.ddayo.aris.Aris
 import me.ddayo.aris.luagen.LuaFunction
 import me.ddayo.aris.luagen.LuaProvider
 import org.apache.logging.log4j.LogManager
 
 @LuaProvider
 object BaseFunction {
-    @LuaFunction(name = "create_area_builder")
-    fun create() = AreaBuilder()
-
-    @LuaFunction("create_point")
-    fun create(x: Double, y: Double) = Point(x, y)
-
-    @LuaFunction("create_window")
-    fun createWindow() = BaseScreen()
-
     @LuaFunction("log_debug")
     fun debugLog(msg: String) = LogManager.getLogger().debug(msg)
 
@@ -29,4 +18,9 @@ object BaseFunction {
 
     @LuaFunction("log_error")
     fun errorLog(msg: String) = LogManager.getLogger().error(msg)
+
+    @LuaFunction("check_version")
+    fun version(v: String) {
+        if(Version.versionCompare(v, Aris.VERSION) > 0) throw Exception("Current script needs $v which is not capable with ARIS ${Aris.VERSION}")
+    }
 }
