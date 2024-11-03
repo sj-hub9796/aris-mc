@@ -1,15 +1,15 @@
 package me.ddayo.aris.client.gui.element
 
+import me.ddayo.aris.ILuaStaticDecl
 import me.ddayo.aris.client.gui.ImageTexture
 import me.ddayo.aris.client.gui.RenderUtil
 import me.ddayo.aris.client.lua.ClientFunction
-import me.ddayo.aris.lua.glue.ScriptImageRenderer_LuaGenerated.pushLua
+import me.ddayo.aris.lua.glue.LuaClientOnlyGenerated
 import me.ddayo.aris.luagen.LuaFunction
 import me.ddayo.aris.luagen.LuaProvider
 import net.minecraft.client.gui.GuiGraphics
 import net.minecraft.client.gui.narration.NarrationElementOutput
 import net.minecraft.network.chat.Component
-import party.iroiro.luajava.Lua
 
 @LuaProvider(ClientFunction.CLIENT_ONLY)
 class ScriptImageRenderer(
@@ -19,7 +19,7 @@ class ScriptImageRenderer(
     width: Int,
     height: Int,
     component: Component
-) : BaseWidget(x, y, width, height, component) {
+) : BaseWidget(x, y, width, height, component), ILuaStaticDecl by LuaClientOnlyGenerated.ScriptImageRenderer_LuaGenerated {
     override fun renderWidget(guiGraphics: GuiGraphics, i: Int, j: Int, f: Float) {
         resource.tryBind()
         resource.location?.let {
@@ -34,8 +34,6 @@ class ScriptImageRenderer(
     override fun updateWidgetNarration(narrationElementOutput: NarrationElementOutput) {
         // not planned
     }
-
-    override fun toLua(lua: Lua) = pushLua(lua)
 
     override fun mouseClicked(d: Double, e: Double, i: Int): Boolean {
         return false

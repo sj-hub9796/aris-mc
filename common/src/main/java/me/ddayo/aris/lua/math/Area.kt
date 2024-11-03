@@ -1,16 +1,14 @@
 package me.ddayo.aris.lua.math
 
 import me.ddayo.aris.ILuaStaticDecl
-import me.ddayo.aris.lua.glue.AreaBuilder_LuaGenerated.pushLua
-import me.ddayo.aris.lua.glue.Area_LuaGenerated.pushLua
+import me.ddayo.aris.lua.glue.LuaGenerated
 import me.ddayo.aris.lua.math.Point.Companion.with
 import me.ddayo.aris.luagen.LuaFunction
 import me.ddayo.aris.luagen.LuaProvider
-import party.iroiro.luajava.Lua
 
 
 @LuaProvider
-class AreaBuilder: ILuaStaticDecl {
+class AreaBuilder: ILuaStaticDecl by LuaGenerated.AreaBuilder_LuaGenerated {
     private val points = mutableListOf<Point>()
     @LuaFunction
     fun append(p: Point) {
@@ -19,11 +17,10 @@ class AreaBuilder: ILuaStaticDecl {
 
     @LuaFunction
     fun build() = Area(*points.toTypedArray())
-    override fun toLua(lua: Lua) = pushLua(lua)
 }
 
 @LuaProvider
-class Area(private vararg val points: Point): ILuaStaticDecl {
+class Area(private vararg val points: Point): ILuaStaticDecl by LuaGenerated.Area_LuaGenerated {
     @LuaFunction("is_in")
     fun isIn(p: Point): Boolean {
         var inside = false
@@ -56,6 +53,4 @@ class Area(private vararg val points: Point): ILuaStaticDecl {
 
     @LuaFunction("into_string")
     fun intoString() = "$maxX $maxY $minX $minY"
-
-    override fun toLua(lua: Lua) = pushLua(lua)
 }

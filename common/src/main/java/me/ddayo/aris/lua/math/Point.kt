@@ -1,13 +1,12 @@
 package me.ddayo.aris.lua.math
 
 import me.ddayo.aris.ILuaStaticDecl
-import me.ddayo.aris.lua.glue.Point_LuaGenerated.pushLua
+import me.ddayo.aris.lua.glue.LuaGenerated
 import me.ddayo.aris.luagen.LuaFunction
 import me.ddayo.aris.luagen.LuaProvider
-import party.iroiro.luajava.Lua
 
 @LuaProvider
-data class Point(val x: Double, val y: Double): ILuaStaticDecl {
+data class Point(val x: Double, val y: Double): ILuaStaticDecl by LuaGenerated.Point_LuaGenerated {
     constructor(x: Int, y: Int): this(x.toDouble(), y.toDouble())
 
     companion object {
@@ -27,5 +26,4 @@ data class Point(val x: Double, val y: Double): ILuaStaticDecl {
 
     @LuaFunction("into_string")
     fun intoString() = "($x, $y)"
-    override fun toLua(lua: Lua) = pushLua(lua)
 }

@@ -2,6 +2,7 @@ package me.ddayo.aris
 
 import me.ddayo.aris.lua.engine.ClientBaseEngine
 import org.apache.logging.log4j.LogManager
+import party.iroiro.luajava.luajit.LuaJit
 
 object Aris {
     const val MOD_ID = "aris"
@@ -12,10 +13,10 @@ object Aris {
     }
 
     fun afterStart() {
-        val engine = ClientBaseEngine()
-        engine.addTask(
-            LuaEngine.LuaTask(
-                engine, """
+        LogManager.getLogger().info("AfterStart")
+        val engine = ClientBaseEngine(LuaJit())
+        val task = engine.createTask(
+                """
             check_version("0.1.0")
             local screen = create_window()
             screen:open()
@@ -34,8 +35,9 @@ object Aris {
                 task_yield()
             end
         """.trimIndent(), "test"
-            )
         )
         engine.loop()
+        if(task.errorMessage.isNotBlank())
+            LogManager.getLogger().error(task.pullError().toString())
     }
 }

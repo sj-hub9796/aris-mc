@@ -1,8 +1,9 @@
 package me.ddayo.aris.client.gui
 
 import me.ddayo.aris.ILuaStaticDecl
+import me.ddayo.aris.LuaFunc
 import me.ddayo.aris.client.gui.element.BaseWidget
-import me.ddayo.aris.lua.glue.BaseScreen_LuaGenerated.pushLua
+import me.ddayo.aris.lua.glue.LuaGenerated
 import me.ddayo.aris.luagen.LuaFunction
 import me.ddayo.aris.luagen.LuaProvider
 import net.minecraft.client.Minecraft
@@ -11,11 +12,9 @@ import net.minecraft.client.gui.components.AbstractWidget
 import net.minecraft.client.gui.screens.Screen
 import net.minecraft.network.chat.Component
 import org.apache.logging.log4j.LogManager
-import party.iroiro.luajava.Lua
-import party.iroiro.luajava.value.LuaValue
 
 @LuaProvider
-class BaseScreen : Screen(Component.empty()), ILuaStaticDecl {
+class BaseScreen : Screen(Component.empty()), ILuaStaticDecl by LuaGenerated.BaseScreen_LuaGenerated {
     override fun render(guiGraphics: GuiGraphics, i: Int, j: Int, f: Float) {
         if(minecraft?.level != null)
             renderBackground(guiGraphics)
@@ -43,8 +42,6 @@ class BaseScreen : Screen(Component.empty()), ILuaStaticDecl {
         super.init()
     }
 
-    override fun toLua(lua: Lua) = pushLua(lua)
-
     private val addedWidgets = mutableListOf<AbstractWidget>()
 
     @LuaFunction(name = "add_child")
@@ -53,9 +50,9 @@ class BaseScreen : Screen(Component.empty()), ILuaStaticDecl {
         rebuildWidgets()
     }
 
-    private val renderHooks = mutableListOf<LuaValue>()
+    private val renderHooks = mutableListOf<LuaFunc>()
     @LuaFunction(name = "add_render_hook")
-    fun addRenderHook(fn: LuaValue) {
+    fun addRenderHook(fn: LuaFunc) {
         renderHooks.add(fn)
     }
 }
