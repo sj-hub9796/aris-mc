@@ -1,10 +1,12 @@
 package me.ddayo.aris.client.lua
 
 import me.ddayo.aris.LuaFunc
+import me.ddayo.aris.client.ClientDataHandler
 import me.ddayo.aris.luagen.LuaFunction
 import me.ddayo.aris.luagen.LuaProvider
 import net.minecraft.client.Minecraft
 import net.minecraft.network.chat.Component
+import net.minecraft.world.item.ItemStack
 
 
 @LuaProvider(ClientInGameFunction.CLIENT_IN_GAME_ONLY)
@@ -26,6 +28,15 @@ object ClientInGameFunction {
 
     @LuaFunction("get_player_y")
     fun getPlayerY() = mc.player!!.y
+
+    @LuaFunction("get_server_data_string")
+    fun getServerDataString(of: String) = ClientDataHandler.clientStringData[of] ?: "null"
+
+    @LuaFunction("get_server_data_number")
+    fun getServerDataNumber(of: String) = ClientDataHandler.clientNumberData[of] ?: 0.0
+
+    @LuaFunction("get_server_data_item")
+    fun getServerDataItem(of: String) = ClientDataHandler.clientItemStackData[of] ?: ItemStack.EMPTY
 
     private val tickFunctions = mutableListOf<LuaFunc>()
     @LuaFunction("add_tick_hook")

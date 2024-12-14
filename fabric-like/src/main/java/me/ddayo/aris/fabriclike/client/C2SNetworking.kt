@@ -28,7 +28,7 @@ object C2SNetworking {
                     S2CNetworking.EngineSpace.IN_GAME -> EngineManager::retrieveInGameEngine
                 }
                 engine.invoke {
-                    it.createTask(File("aris", of), name.ifEmpty { null })
+                    it.createTask(File("robots", of), name.ifEmpty { null })
                 }
             }
         }
