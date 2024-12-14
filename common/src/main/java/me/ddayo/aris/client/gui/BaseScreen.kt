@@ -20,12 +20,9 @@ class BaseScreen : Screen(Component.empty()), ILuaStaticDecl by LuaGenerated.Bas
             renderBackground(guiGraphics)
         else guiGraphics.fill(0, 0, guiGraphics.guiWidth(), guiGraphics.guiHeight(), 0xff000000.toInt())
 
-        guiGraphics.pose().pushPose()
-        guiGraphics.pose().scale(3f, 3f, 3f)
-        guiGraphics.drawString(Minecraft.getInstance().font, "Test", 0, 0, 0xffffff)
-        guiGraphics.pose().popPose()
-
-        renderHooks.forEach { it.call(i, j, f) }
+        renderHooks.indices.forEach {
+            renderHooks[it].call(i, j, f)
+        }
 
         super.render(guiGraphics, i, j, f)
     }
@@ -33,6 +30,7 @@ class BaseScreen : Screen(Component.empty()), ILuaStaticDecl by LuaGenerated.Bas
     @LuaFunction(name = "open")
     fun openScreen() {
         Minecraft.getInstance().setScreen(this)
+        LogManager.getLogger().info("Open")
     }
 
     override fun init() {
@@ -54,5 +52,22 @@ class BaseScreen : Screen(Component.empty()), ILuaStaticDecl by LuaGenerated.Bas
     @LuaFunction(name = "add_render_hook")
     fun addRenderHook(fn: LuaFunc) {
         renderHooks.add(fn)
+    }
+
+    @LuaFunction(name = "clear_render_hook")
+    fun clearRenderHook() {
+        renderHooks.clear()
+    }
+
+    @LuaFunction(name = "clear_child")
+    fun clearChild() {
+        addedWidgets.clear()
+        rebuildWidgets()
+    }
+
+    override fun onClose() {
+        super.onClose()
+
+        LogManager.getLogger().info("Close")
     }
 }

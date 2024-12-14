@@ -5,6 +5,7 @@ import me.ddayo.aris.client.gui.BaseScreen
 import me.ddayo.aris.client.gui.ImageTexture
 import me.ddayo.aris.client.gui.TextureManager
 import me.ddayo.aris.client.gui.element.ScriptClickableRenderer
+import me.ddayo.aris.client.gui.element.ScriptDefaultTextRenderer
 import me.ddayo.aris.client.gui.element.ScriptImageRenderer
 import me.ddayo.aris.lua.math.Area
 import me.ddayo.aris.lua.math.AreaBuilder
@@ -14,6 +15,7 @@ import me.ddayo.aris.luagen.LuaFunction
 import me.ddayo.aris.luagen.LuaProvider
 import net.fabricmc.api.EnvType
 import net.fabricmc.api.Environment
+import net.minecraft.client.Minecraft
 import net.minecraft.network.chat.Component
 
 @LuaProvider(ClientFunction.CLIENT_ONLY)
@@ -52,8 +54,15 @@ object ClientFunction {
             Component.empty()
         )
 
+    @LuaFunction("create_default_text_renderer")
+    fun createDefaultTextRenderer(text: String, x: Int, y: Int, scale: Double, color: Int) =
+        ScriptDefaultTextRenderer(text, Minecraft.getInstance().font, x, y, scale, color, Component.empty())
+
     @LuaFunction("load_image")
     fun loadImageRuntime(name: String, path: String): ImageTexture {
         return TextureManager.orLoadTexture(name) { ImageTexture(name, path) } as ImageTexture
     }
+
+    @LuaFunction("close_screen")
+    fun closeScreen() = Minecraft.getInstance().setScreen(null)
 }

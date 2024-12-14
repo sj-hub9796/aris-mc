@@ -17,6 +17,9 @@
   "entrypoints": {
     "main": [
       "me.ddayo.aris.fabric.ArisFabric"
+    ],
+    "client": [
+      "me.ddayo.aris.fabric.client.ArisFabricClient"
     ]
   },
   "mixins": [

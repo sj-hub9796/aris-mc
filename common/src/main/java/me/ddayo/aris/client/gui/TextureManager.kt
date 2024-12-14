@@ -28,11 +28,11 @@ class ImageTexture(val name: String, uri: String) : Texture() {
 
     init {
         Thread {
-            if (uri.startsWith("https://") || uri.startsWith("http://"))
-                bytes = URL(uri).openStream()
+            bytes = if (uri.startsWith("https://") || uri.startsWith("http://"))
+                URL(uri).openStream()
             else if (uri.startsWith("jar://"))
                 TODO()
-            else bytes = File(uri).inputStream()
+            else File("assets/images", uri).inputStream()
             LogManager.getLogger().error("Loaded")
         }.start()
     }
@@ -53,5 +53,9 @@ class ImageTexture(val name: String, uri: String) : Texture() {
 
     @LuaFunction
     fun dummy() {
+    }
+
+    fun finalize() {
+        location?.let { Minecraft.getInstance().textureManager.release(it) }
     }
 }

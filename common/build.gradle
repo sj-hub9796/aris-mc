@@ -18,6 +18,7 @@ dependencies {
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8"
 
     implementation "me.ddayo:aris.luagen"
+    implementation "party.iroiro.luajava:luajit:4.0.0"
     ksp "me.ddayo:ap"
 }
 

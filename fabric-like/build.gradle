@@ -15,6 +15,7 @@ dependencies {
 
     compileOnly(project(path: ":common", configuration: "namedElements")) { transitive false }
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8"
+    implementation "me.ddayo:aris.luagen"
 }
 repositories {
     mavenCentral()

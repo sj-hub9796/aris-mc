@@ -31,8 +31,10 @@ dependencies {
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8"
 
     implementation "me.ddayo:aris.luagen"
-    include "me.ddayo:aris.luagen"
+    shadowCommon("me.ddayo:aris.luagen") { transitive false }
     runtimeOnly 'party.iroiro.luajava:luajit-platform:4.0.2:natives-desktop'
+    shadowCommon('party.iroiro.luajava:luajit-platform:4.0.2:natives-desktop')
+    shadowCommon("party.iroiro.luajava:luajit:4.0.0")
 }
 
 processResources {

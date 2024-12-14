@@ -20,7 +20,6 @@ abstract class BaseWidget(
 
     @LuaFunction(name = "set_x")
     override fun setX(new: Int) {
-        LogManager.getLogger().info("Set X: $new")
         super.setX(new)
     }
 

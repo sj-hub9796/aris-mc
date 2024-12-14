@@ -8,7 +8,7 @@ import net.fabricmc.api.Environment
 import party.iroiro.luajava.Lua
 
 @Environment(EnvType.CLIENT)
-class ClientBaseEngine(lua: Lua): MCBaseEngine(lua) {
+open class ClientBaseEngine(lua: Lua): MCBaseEngine(lua) {
     init {
         LuaClientOnlyGenerated.initLua(lua)
     }
