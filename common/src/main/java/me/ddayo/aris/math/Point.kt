@@ -1,4 +1,4 @@
-package me.ddayo.aris.lua.math
+package me.ddayo.aris.math
 
 import me.ddayo.aris.ILuaStaticDecl
 import me.ddayo.aris.lua.glue.LuaGenerated

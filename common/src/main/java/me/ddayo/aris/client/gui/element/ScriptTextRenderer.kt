@@ -1,70 +1,46 @@
 package me.ddayo.aris.client.gui.element
 
 import me.ddayo.aris.ILuaStaticDecl
-import me.ddayo.aris.client.gui.RenderUtil.push
-import me.ddayo.aris.client.lua.ClientFunction
+import me.ddayo.aris.client.engine.ClientMainEngine
+import me.ddayo.aris.client.gui.RenderUtil
 import me.ddayo.aris.lua.glue.LuaClientOnlyGenerated
-import me.ddayo.aris.luagen.LuaFunction
+import me.ddayo.aris.luagen.LuaProperty
 import me.ddayo.aris.luagen.LuaProvider
-import net.minecraft.client.Minecraft
 import net.minecraft.client.gui.Font
-import net.minecraft.client.gui.GuiGraphics
-import net.minecraft.client.gui.narration.NarrationElementOutput
-import net.minecraft.network.chat.Component
 
-@LuaProvider(ClientFunction.CLIENT_ONLY)
+@LuaProvider(ClientMainEngine.PROVIDER)
 class ScriptDefaultTextRenderer(
-    private var text: String,
+    _text: String,
     private val font: Font,
     x: Int,
     y: Int,
-    private var scale: Double,
-    private var color: Int,
-    component: Component
-) : BaseWidget(x, y, (font.width(text) * scale).toInt(), (font.lineHeight * scale).toInt(), component),
+    @LuaProperty
+    var scale: Double,
+    @LuaProperty
+    var color: Int
+) : BaseWidget(x, y, (font.width(_text) * scale).toInt(), (font.lineHeight * scale).toInt()),
     ILuaStaticDecl by LuaClientOnlyGenerated.ScriptDefaultTextRenderer_LuaGenerated {
-    override fun renderWidget(guiGraphics: GuiGraphics, i: Int, j: Int, f: Float) {
-        val stack = guiGraphics.pose()
+
+    @LuaProperty
+    var text = _text
+        set(value) {
+            field = value
+            width = font.width(text)
+        }
+
+    override fun RenderUtil.render(mx: Double, my: Double, delta: Float) {
         if (scale != 0.0)
-            stack.push {
-                stack.translate(x.toDouble(), y.toDouble(), 0.0)
-                stack.scale(scale.toFloat(), scale.toFloat(), scale.toFloat())
-                guiGraphics.drawString(
-                    Minecraft.getInstance().font,
+            push {
+                translate(x.toDouble(), y.toDouble(), 0.0)
+                scale(scale, scale, scale)
+
+                graphics.drawString(
+                    font,
                     text,
                     (x / scale).toInt(),
                     (y / scale).toInt(),
                     color
                 )
             }
-    }
-
-    @LuaFunction("set_scale")
-    fun setScale(new: Double) {
-        scale = new
-    }
-
-    @LuaFunction("get_scale")
-    fun getScale() = scale
-
-    @LuaFunction("set_color")
-    fun setColor(new: Int) {
-        color = new
-    }
-
-    @LuaFunction("get_color")
-    fun getColor() = color
-
-    @LuaFunction("set_text")
-    fun setText(new: String) {
-        text = new
-        width = font.width(text)
-    }
-
-    @LuaFunction("get_text")
-    fun getText() = text
-
-    override fun updateWidgetNarration(narrationElementOutput: NarrationElementOutput) {
-
     }
 }

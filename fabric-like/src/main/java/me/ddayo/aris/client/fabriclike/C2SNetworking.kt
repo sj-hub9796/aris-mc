@@ -1,9 +1,9 @@
-package me.ddayo.aris.fabriclike.client
+package me.ddayo.aris.client.fabriclike
 
 import me.ddayo.aris.Aris
 import me.ddayo.aris.client.ClientDataHandler
 import me.ddayo.aris.fabriclike.S2CNetworking
-import me.ddayo.aris.lua.engine.EngineManager
+import me.ddayo.aris.client.engine.ClientEngineManager
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking
 import net.minecraft.resources.ResourceLocation
 import net.minecraft.world.item.ItemStack
@@ -24,8 +24,8 @@ object C2SNetworking {
                 val name = _name
 
                 val engine = when (space) {
-                    S2CNetworking.EngineSpace.GLOBAL -> EngineManager::retrieveGlobalEngine
-                    S2CNetworking.EngineSpace.IN_GAME -> EngineManager::retrieveInGameEngine
+                    S2CNetworking.EngineSpace.GLOBAL -> ClientEngineManager::retrieveGlobalEngine
+                    S2CNetworking.EngineSpace.IN_GAME -> ClientEngineManager::retrieveInGameEngine
                 }
                 engine.invoke {
                     it.createTask(File("robots", of), name.ifEmpty { null })

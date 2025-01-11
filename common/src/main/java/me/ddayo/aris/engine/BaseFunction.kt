@@ -1,4 +1,4 @@
-package me.ddayo.aris.lua
+package me.ddayo.aris.engine
 
 import me.ddayo.aris.Aris
 import me.ddayo.aris.luagen.LuaFunction
@@ -7,17 +7,18 @@ import org.apache.logging.log4j.LogManager
 
 @LuaProvider
 object BaseFunction {
+    private val logger = LogManager.getLogger()
     @LuaFunction("log_debug")
-    fun debugLog(msg: String) = LogManager.getLogger().debug(msg)
+    fun debugLog(msg: String) = logger.debug(msg)
 
     @LuaFunction("log_info")
-    fun infoLog(msg: String) = LogManager.getLogger().info(msg)
+    fun infoLog(msg: String) = logger.info(msg)
 
     @LuaFunction("log_warn")
-    fun warnLog(msg: String) = LogManager.getLogger().warn(msg)
+    fun warnLog(msg: String) = logger.warn(msg)
 
     @LuaFunction("log_error")
-    fun errorLog(msg: String) = LogManager.getLogger().error(msg)
+    fun errorLog(msg: String) = logger.error(msg)
 
     @LuaFunction("check_version")
     fun version(v: String) {

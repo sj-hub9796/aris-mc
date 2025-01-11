@@ -1,4 +1,4 @@
-package me.ddayo.aris.lua.engine
+package me.ddayo.aris.engine
 
 import me.ddayo.aris.LuaEngine
 import me.ddayo.aris.lua.glue.LuaGenerated
@@ -8,7 +8,7 @@ import java.io.File
 
 open class MCBaseEngine(lua: Lua) : LuaEngine(lua, errorMessageHandler = { LogManager.getLogger().error(it) }) {
     init {
-        LuaGenerated.initLua(lua)
+        LuaGenerated.initLua(this)
     }
 
     fun createTask(file: File, _name: String? = null) {

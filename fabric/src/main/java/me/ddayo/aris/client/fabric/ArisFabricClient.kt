@@ -1,7 +1,6 @@
-package me.ddayo.aris.fabric.client
+package me.ddayo.aris.client.fabric
 
-import me.ddayo.aris.fabriclike.client.C2SNetworking
-import me.ddayo.aris.fabriclike.client.ArisFabricLikeClient
+import me.ddayo.aris.client.fabriclike.ArisFabricLikeClient
 import net.fabricmc.api.ClientModInitializer
 
 class ArisFabricClient: ClientModInitializer {

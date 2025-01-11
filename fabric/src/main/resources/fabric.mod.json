@@ -19,7 +19,7 @@
       "me.ddayo.aris.fabric.ArisFabric"
     ],
     "client": [
-      "me.ddayo.aris.fabric.client.ArisFabricClient"
+      "me.ddayo.aris.client.fabric.ArisFabricClient"
     ]
   },
   "mixins": [

@@ -1,25 +1,30 @@
-package me.ddayo.aris.lua.engine
+package me.ddayo.aris.client.engine
 
 import com.mojang.blaze3d.systems.RenderSystem
 import org.apache.logging.log4j.LogManager
 import party.iroiro.luajava.luajit.LuaJit
 
-object EngineManager {
+object ClientEngineManager {
     private val lua get() = LuaJit()
 
-    private var globalEngine: ClientBaseEngine? = null
+    private var globalEngine: ClientMainEngine? = null
     private var inGameEngine: ClientInGameEngine? = null
 
     fun initGlobalEngine() {
         RenderSystem.assertOnRenderThread()
         if (globalEngine != null) LogManager.getLogger().warn("Global engine already initialized")
-        globalEngine = ClientBaseEngine(lua)
+        globalEngine = ClientMainEngine(lua)
     }
 
     fun disposeGlobalEngine() {
         RenderSystem.assertOnRenderThread()
         if (globalEngine == null) LogManager.getLogger().warn("Global engine does not exists")
         globalEngine = null
+    }
+
+    fun reloadGlobalEngine() {
+        disposeGlobalEngine()
+        initGlobalEngine()
     }
 
     fun initInGameEngine() {
@@ -31,10 +36,15 @@ object EngineManager {
     fun disposeInGameEngine() {
         RenderSystem.assertOnRenderThread()
         if (inGameEngine != null) LogManager.getLogger().warn("In game engine does not exists")
-        inGameEngine = ClientInGameEngine(lua)
+        inGameEngine = null
     }
 
-    fun retrieveGlobalEngine(f: (ClientBaseEngine) -> Unit) {
+    fun reloadInGameEngine() {
+        disposeInGameEngine()
+        initInGameEngine()
+    }
+
+    fun retrieveGlobalEngine(f: (ClientMainEngine) -> Unit) {
         RenderSystem.assertOnRenderThread()
         f(globalEngine ?: throw IllegalStateException("Global engine is not initialized yet"))
     }

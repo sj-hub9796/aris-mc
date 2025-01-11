@@ -1,4 +1,4 @@
-package me.ddayo.aris.fabriclike.client
+package me.ddayo.aris.client.fabriclike
 
 import me.ddayo.aris.client.ArisClient
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientLifecycleEvents
