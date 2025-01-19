@@ -12,7 +12,7 @@ import org.apache.logging.log4j.LogManager
 TODO: This may replaced into IN_GAME_ONLY
  */
 @LuaProvider(ClientMainEngine.PROVIDER)
-class HudRenderer: BaseRenderer(), ILuaStaticDecl by LuaClientOnlyGenerated.HudRenderer_LuaGenerated {
+class HudRenderer: BaseRectComponent(), ILuaStaticDecl by LuaClientOnlyGenerated.HudRenderer_LuaGenerated {
     @LuaFunction(name = "open_hud")
     fun openHud() {
         ClientDataHandler.enabledHud.add(this)

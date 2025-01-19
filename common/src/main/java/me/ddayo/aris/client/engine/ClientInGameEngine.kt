@@ -8,6 +8,6 @@ class ClientInGameEngine(lua: Lua): ClientMainEngine(lua) {
         const val PROVIDER = "ClientInGameOnlyGenerated"
     }
     init {
-        ClientInGameOnlyGenerated.initLua(this)
+        ClientInGameOnlyGenerated.initEngine(this)
     }
 }

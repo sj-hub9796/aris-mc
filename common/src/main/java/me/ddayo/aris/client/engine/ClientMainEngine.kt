@@ -12,6 +12,6 @@ open class ClientMainEngine(lua: Lua): MCBaseEngine(lua) {
         const val PROVIDER = "LuaClientOnlyGenerated"
     }
     init {
-        LuaClientOnlyGenerated.initLua(this)
+        LuaClientOnlyGenerated.initEngine(this)
     }
 }

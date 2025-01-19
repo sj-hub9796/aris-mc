@@ -9,6 +9,9 @@ open class InitEngine(lua: Lua): MCBaseEngine(lua) {
     }
 
     init {
-        InitGenerated.initLua(this)
+        InitGenerated.initEngine(this)
+        EngineAddOn.initEngineAddOns().forEach {
+            it.initLua(this)
+        }
     }
 }

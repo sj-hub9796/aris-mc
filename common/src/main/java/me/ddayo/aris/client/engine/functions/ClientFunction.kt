@@ -13,6 +13,8 @@ import me.ddayo.aris.math.Point.Companion.with
 import me.ddayo.aris.luagen.LuaFunction
 import me.ddayo.aris.luagen.LuaProvider
 import me.ddayo.aris.client.gui.ScreenRenderer
+import me.ddayo.aris.client.gui.element.ScriptItemRenderer
+import me.ddayo.aris.engine.LuaItemStack
 import net.fabricmc.api.EnvType
 import net.fabricmc.api.Environment
 import net.minecraft.client.Minecraft
@@ -20,7 +22,6 @@ import net.minecraft.client.Minecraft
 @LuaProvider(ClientMainEngine.PROVIDER)
 @Environment(EnvType.CLIENT)
 object ClientFunction {
-
     @LuaFunction(name = "create_area_builder")
     fun create() = AreaBuilder()
 
@@ -31,13 +32,7 @@ object ClientFunction {
     fun createWindow() = ScreenRenderer()
 
     @LuaFunction("create_image_renderer")
-    fun createRenderer(res: ImageResource, x: Int, y: Int, width: Int, height: Int) = ScriptImageRenderer(
-        res,
-        x,
-        y,
-        width,
-        height
-    )
+    fun createImageRenderer(res: ImageResource) = ScriptImageRenderer(res)
 
     @LuaFunction("create_clickable")
     fun createClickable(onClick: LuaFunc, area: Area) =
@@ -51,8 +46,11 @@ object ClientFunction {
         )
 
     @LuaFunction("create_default_text_renderer")
-    fun createDefaultTextRenderer(text: String, x: Int, y: Int, scale: Double, color: Int) =
-        ScriptDefaultTextRenderer(text, Minecraft.getInstance().font, x, y, scale, color)
+    fun createDefaultTextRenderer(text: String, color: Int) =
+        ScriptDefaultTextRenderer(text, Minecraft.getInstance().font, color)
+
+    @LuaFunction("create_item_renderer")
+    fun createItemRenderer(item: LuaItemStack) = ScriptItemRenderer(item.inner)
 
     @LuaFunction("load_image")
     fun loadImageRuntime(path: String): ImageResource = ImageResource.getOrCreate(path)

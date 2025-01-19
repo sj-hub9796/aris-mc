@@ -10,9 +10,6 @@ import net.minecraft.world.item.Item
 
 @LuaProvider(InitEngine.PROVIDER)
 object InitFunction {
-    @LuaFunction
-    fun dummy() {}
-
     @LuaFunction("create_item")
     fun registerItem(key: String) {
         Registry.register(BuiltInRegistries.ITEM, ResourceLocation(Aris.MOD_ID, key), Item(Item.Properties()))

@@ -44,7 +44,7 @@ open class RenderUtilImpl : RenderUtil() {
         return Minecraft.getInstance().resourceManager.getResource(ResourceLocation(Aris.MOD_ID, "textures/$x")).isPresent
     }
 
-    override fun render(
+    override fun _render(
         x: Double,
         y: Double,
         w: Double,
@@ -294,7 +294,7 @@ abstract class RenderUtil {
         return false
     }
 
-    fun render() = render(0, 0, 1920, 1080)
+    fun _render() = _render(0, 0, 1920, 1080)
 
     fun fillRender(x: Int, y: Int, w: Int, h: Int, r: Int, g: Int, b: Int, a: Int) =
         fillRender(x.toDouble(), y.toDouble(), w.toDouble(), h.toDouble(), r, g, b, a)
@@ -313,9 +313,9 @@ abstract class RenderUtil {
     fun fillRender(x: Double, y: Double, w: Double, h: Double, r: Double, g: Double, b: Double, a: Double) =
         fillRender(x, y, w, h, r.toFloat(), g.toFloat(), b.toFloat(), a.toFloat())
 
-    fun render(x: Int, y: Int, w: Int, h: Int) = render(x.toDouble(), y.toDouble(), w.toDouble(), h.toDouble())
+    fun _render(x: Int, y: Int, w: Int, h: Int) = _render(x.toDouble(), y.toDouble(), w.toDouble(), h.toDouble())
 
-    fun render(x: Double, y: Double, w: Double, h: Double) = render(x, y, w, h, 0.0, 1.0, 0.0, 1.0)
+    fun _render(x: Double, y: Double, w: Double, h: Double) = _render(x, y, w, h, 0.0, 1.0, 0.0, 1.0)
     fun renderColorTex(x: Double, y: Double, w: Double, h: Double, r: Double, g: Double, b: Double, a: Double) =
         renderColorTex(
             x.toFloat(),
@@ -330,7 +330,7 @@ abstract class RenderUtil {
 
     abstract fun fillRender(x: Double, y: Double, w: Double, h: Double, r: Int, g: Int, b: Int, a: Int)
     abstract fun fillRender(x: Double, y: Double, w: Double, h: Double, r: Float, g: Float, b: Float, a: Float)
-    abstract fun render(x: Double, y: Double, w: Double, h: Double, th1: Double, th2: Double, tv1: Double, tv2: Double)
+    abstract fun _render(x: Double, y: Double, w: Double, h: Double, th1: Double, th2: Double, tv1: Double, tv2: Double)
     abstract fun renderColorTex(x: Float, y: Float, w: Float, h: Float, r: Float, g: Float, b: Float, a: Float)
 
     abstract fun getTexWidth(): Int
@@ -349,12 +349,12 @@ abstract class RenderUtil {
     abstract fun scale(x: Double, y: Double, z: Double)
     open fun readyRender() {}
 
-    fun FHDScale(width: Int, height: Int, x: () -> Unit) = FHDScale(width.toDouble(), height.toDouble(), x)
+    fun fixScale(width: Int, height: Int, newWidth: Int, newHeight: Int, x: () -> Unit) = fixScale(width.toDouble(), height.toDouble(), newWidth.toDouble(), newHeight.toDouble(), x)
 
-    fun FHDScale(width: Double, height: Double, x: () -> Unit) {
+    fun fixScale(width: Double, height: Double, newWidth: Double, newHeight: Double, x: () -> Unit) {
         push {
-            translate((width - height * 16.0 / 9) / 2, 0.0, 0.0)
-            scale(height / 1080.0, height / 1080.0, height / 1080.0)
+            translate((width - height * newWidth / newHeight) / 2, 0.0, 0.0)
+            scale(height / newHeight, height / newHeight, height / newHeight)
             x()
         }
     }

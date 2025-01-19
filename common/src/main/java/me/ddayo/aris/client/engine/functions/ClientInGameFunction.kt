@@ -2,11 +2,13 @@ package me.ddayo.aris.client.engine.functions
 
 import me.ddayo.aris.LuaFunc
 import me.ddayo.aris.client.ClientDataHandler
+import me.ddayo.aris.client.KeyBindingHelper
 import me.ddayo.aris.client.engine.ClientInGameEngine
 import me.ddayo.aris.client.gui.HudRenderer
 import me.ddayo.aris.engine.LuaItemStack
 import me.ddayo.aris.luagen.LuaFunction
 import me.ddayo.aris.luagen.LuaProvider
+import me.ddayo.aris.util.ListExtensions.mutableForEach
 import net.minecraft.client.Minecraft
 import net.minecraft.network.chat.Component
 import net.minecraft.world.item.ItemStack
@@ -38,7 +40,8 @@ object ClientInGameFunction {
     }
 
     fun tick() {
-        tickFunctions.forEach { it.call() }
+        tickFunctions.mutableForEach { it.call() }
+        KeyBindingHelper.tickKeyBindings()
     }
 
 
@@ -57,4 +60,6 @@ object ClientInGameFunction {
     @LuaFunction("remove_item_data")
     fun getItemData(of: String) = LuaItemStack(ClientDataHandler.clientItemStackData[of] ?: ItemStack.EMPTY)
 
+    @LuaFunction("add_on_key_pressed")
+    fun onKeyPressed(key: String, function: LuaFunc) = KeyBindingHelper.registerAction(key, function::call)
 }

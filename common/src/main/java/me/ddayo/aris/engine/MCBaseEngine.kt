@@ -8,12 +8,40 @@ import java.io.File
 
 open class MCBaseEngine(lua: Lua) : LuaEngine(lua, errorMessageHandler = { LogManager.getLogger().error(it) }) {
     init {
-        LuaGenerated.initLua(this)
+        LuaGenerated.initEngine(this)
+
+        lua.push { lua ->
+            val task = lua.toString(-1)!!
+            lua.pop(1)
+            lua.push(isProcessFinished(task))
+            1
+        }
+        lua.setGlobal("__aris_internal_is_processed")
+        lua.load("""
+            function depends_on(task)
+                local cnt = 0
+                while not __aris_internal_is_processed(task) do
+                    task_yield()
+                    cnt = cnt + 1
+                    if cnt == 100000 then error("task dependency too deep or recursive dependency detected!!") end
+                end
+            end
+        """.trimIndent())
     }
+
+    private val processedTasks = mutableSetOf<String>()
+
+    fun isProcessFinished(check: String) = processedTasks.contains(check) && this.tasks.none { it.name == check }
 
     fun createTask(file: File, _name: String? = null) {
         if (!file.exists()) return
-        val name = _name ?: file.name
+        val name = _name ?: file.canonicalPath
         createTask(file.readText(), name)
+    }
+
+
+    override fun createTask(code: String, name: String, repeat: Boolean): LuaTask {
+        processedTasks.add(name)
+        return super.createTask(code, name, repeat)
     }
 }

@@ -24,6 +24,7 @@ dependencies {
 
 ksp {
     arg("package_name", "me.ddayo.aris.lua.glue")
+    arg("export_doc", "true")
 }
 
 publishing {

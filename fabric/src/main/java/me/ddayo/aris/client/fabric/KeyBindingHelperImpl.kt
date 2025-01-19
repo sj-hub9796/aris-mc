@@ -5,7 +5,7 @@ import net.minecraft.client.KeyMapping
 
 object KeyBindingHelperImpl {
     @JvmStatic
-    fun register(binding: KeyMapping) {
-        KeyBindingHelper.registerKeyBinding(binding)
+    fun registerPlatform(binding: KeyMapping): KeyMapping {
+        return KeyBindingHelper.registerKeyBinding(binding)
     }
 }
