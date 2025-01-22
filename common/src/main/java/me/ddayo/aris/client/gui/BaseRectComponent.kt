@@ -1,11 +1,10 @@
 package me.ddayo.aris.client.gui
 
 import me.ddayo.aris.ILuaStaticDecl
-import me.ddayo.aris.client.engine.ClientMainEngine
+import me.ddayo.aris.engine.client.ClientMainEngine
 import me.ddayo.aris.lua.glue.LuaClientOnlyGenerated
 import me.ddayo.aris.luagen.LuaProperty
 import me.ddayo.aris.luagen.LuaProvider
-import net.minecraft.client.gui.GuiGraphics
 
 @LuaProvider(ClientMainEngine.PROVIDER)
 open class BaseRectComponent : BaseComponent(),
@@ -37,8 +36,4 @@ open class BaseRectComponent : BaseComponent(),
             yScale = height / value
             field = value
         }
-
-    fun makePointFixed(x: Double, y: Double) =
-        ((x - (width - height * fixedWidth / fixedHeight) / 2) * fixedHeight / height) to
-                (y * fixedHeight / height)
 }

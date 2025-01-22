@@ -1,9 +1,10 @@
 package me.ddayo.aris.client
 
 import me.ddayo.aris.ReferenceMayKeepAlive
-import me.ddayo.aris.client.engine.functions.ClientInGameFunction
-import me.ddayo.aris.client.engine.ClientEngineManager
-import me.ddayo.aris.client.engine.ClientInitEngine
+import me.ddayo.aris.engine.client.ClientInGameEngine
+import me.ddayo.aris.engine.client.functions.ClientInGameFunction
+import me.ddayo.aris.engine.client.ClientInitEngine
+import me.ddayo.aris.engine.client.ClientMainEngine
 import party.iroiro.luajava.luajit.LuaJit
 import java.io.File
 
@@ -11,9 +12,7 @@ object ArisClient {
     @OptIn(ReferenceMayKeepAlive::class)
     fun init() {
         val engine = ClientInitEngine(LuaJit())
-        File("robots/client-init").listFiles()?.forEach {
-            engine.createTask(it, it.nameWithoutExtension)
-        }
+
         while(engine.tasks.isNotEmpty()) {
             engine.loop()
             engine.removeAllFinished()
@@ -21,27 +20,26 @@ object ArisClient {
     }
 
     fun clientTick() {
-        ClientEngineManager.retrieveGlobalEngine { it.loop() }
+        ClientMainEngine.INSTANCE?.loop()
     }
 
     fun clientWorldTick() {
-        ClientInGameFunction.tick()
-        ClientEngineManager.retrieveInGameEngine { it.loop() }
+        ClientInGameEngine.INSTANCE?.tick()
     }
 
     fun onClientJoinGame() {
-        ClientEngineManager.initInGameEngine()
+        ClientInGameEngine.createEngine(LuaJit())
     }
 
     fun onClientLeaveGame() {
-        ClientEngineManager.disposeInGameEngine()
+        ClientInGameEngine.disposeEngine()
     }
 
     fun onClientClose() {
-        ClientEngineManager.disposeGlobalEngine()
+        ClientMainEngine.disposeEngine()
     }
 
     fun onClientStart() {
-        ClientEngineManager.initGlobalEngine()
+        ClientMainEngine.createEngine(LuaJit())
     }
 }

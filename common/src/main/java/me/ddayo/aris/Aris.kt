@@ -1,8 +1,9 @@
 package me.ddayo.aris
 
+import me.ddayo.aris.engine.InGameEngine
 import me.ddayo.aris.engine.InitEngine
+import net.minecraft.server.MinecraftServer
 import party.iroiro.luajava.luajit.LuaJit
-import java.io.File
 
 
 /*
@@ -43,17 +44,22 @@ object Aris {
 
     @OptIn(ReferenceMayKeepAlive::class)
     fun init() {
-        val engine = InitEngine(LuaJit())
-        File("robots/init").listFiles()?.forEach {
-            engine.createTask(it, it.nameWithoutExtension)
-        }
+        val engine = InitEngine.create(LuaJit())
         while(engine.tasks.isNotEmpty()) {
             engine.loop()
             engine.removeAllFinished()
         }
     }
-    fun onServerStart() {
 
+    lateinit var server: MinecraftServer
+        private set
+
+    fun onServerStart(server: MinecraftServer) {
+        this.server = server
+        InGameEngine.createEngine(LuaJit())
     }
 
+    fun onServerTick() {
+        InGameEngine.INSTANCE?.loop()
+    }
 }

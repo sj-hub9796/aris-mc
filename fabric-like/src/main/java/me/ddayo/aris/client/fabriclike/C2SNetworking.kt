@@ -1,9 +1,9 @@
 package me.ddayo.aris.client.fabriclike
 
 import me.ddayo.aris.Aris
-import me.ddayo.aris.client.ClientDataHandler
+import me.ddayo.aris.engine.client.ClientInGameEngine
+import me.ddayo.aris.engine.client.ClientMainEngine
 import me.ddayo.aris.fabriclike.S2CNetworking
-import me.ddayo.aris.client.engine.ClientEngineManager
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking
 import net.minecraft.resources.ResourceLocation
 import net.minecraft.world.item.ItemStack
@@ -24,12 +24,10 @@ object C2SNetworking {
                 val name = _name
 
                 val engine = when (space) {
-                    S2CNetworking.EngineSpace.GLOBAL -> ClientEngineManager::retrieveGlobalEngine
-                    S2CNetworking.EngineSpace.IN_GAME -> ClientEngineManager::retrieveInGameEngine
+                    S2CNetworking.EngineSpace.GLOBAL -> ClientMainEngine.INSTANCE
+                    S2CNetworking.EngineSpace.IN_GAME -> ClientInGameEngine.INSTANCE
                 }
-                engine.invoke {
-                    it.createTask(File("robots", of), name.ifEmpty { null })
-                }
+                engine?.createTask(File("robots/functions", of), name.ifEmpty { null })
             }
         }
         ClientPlayNetworking.registerGlobalReceiver(ResourceLocation(Aris.MOD_ID, "sync_data")) { client, handler, packet, sender ->
@@ -41,10 +39,13 @@ object C2SNetworking {
                 S2CNetworking.ScriptDataType.ITEM -> packet.readItem()
             }
             client.execute {
-                when(type) {
-                    S2CNetworking.ScriptDataType.STRING -> ClientDataHandler.clientStringData[of] = data as String
-                    S2CNetworking.ScriptDataType.NUMBER -> ClientDataHandler.clientNumberData[of] = data as Double
-                    S2CNetworking.ScriptDataType.ITEM -> ClientDataHandler.clientItemStackData[of] = data as ItemStack
+                ClientInGameEngine.INSTANCE?.let {
+                    when (type) {
+                        S2CNetworking.ScriptDataType.STRING -> it.clientStringData[of] = data as String
+                        S2CNetworking.ScriptDataType.NUMBER -> it.clientNumberData[of] = data as Double
+                        S2CNetworking.ScriptDataType.ITEM -> it.clientItemStackData[of] =
+                            data as ItemStack
+                    }
                 }
             }
         }

@@ -2,7 +2,8 @@ package me.ddayo.aris.client.gui
 
 import me.ddayo.aris.ILuaStaticDecl
 import me.ddayo.aris.LuaFunc
-import me.ddayo.aris.client.engine.ClientMainEngine
+import me.ddayo.aris.engine.client.ClientMainEngine
+import me.ddayo.aris.client.gui.element.IClickableElement
 import me.ddayo.aris.luagen.LuaFunction
 import me.ddayo.aris.luagen.LuaProvider
 import me.ddayo.aris.lua.glue.LuaClientOnlyGenerated
@@ -52,7 +53,7 @@ open class BaseComponent : ILuaStaticDecl by LuaClientOnlyGenerated.BaseComponen
     var isActive = true
 
     open fun render(r: RenderUtil, mx: Double, my: Double, delta: Float) {
-        if(!isVisible) return
+        if (!isVisible) return
         r.apply {
             push {
                 translate(x, y, 0.0)
@@ -77,6 +78,7 @@ open class BaseComponent : ILuaStaticDecl by LuaClientOnlyGenerated.BaseComponen
     @LuaFunction(name = "add_child")
     fun addChild(child: BaseComponent) {
         addedWidgets.add(child)
+        child.parent = this
     }
 
     private val renderHooks = mutableListOf<LuaFunc>()
@@ -93,8 +95,31 @@ open class BaseComponent : ILuaStaticDecl by LuaClientOnlyGenerated.BaseComponen
 
     @LuaFunction(name = "clear_child")
     fun clearChild() {
+        addedWidgets.forEach {
+            it.parent = null
+        }
         addedWidgets.clear()
     }
 
+    @LuaFunction(name = "remove_child")
+    fun removeChild(child: BaseComponent) {
+        if(addedWidgets.remove(child))
+            child.parent = null
+    }
+
     open fun RenderUtil._render(mx: Double, my: Double, delta: Float) {}
+
+    fun onMouseRelease(mx: Double, my: Double, button: Int): Boolean {
+        val nmx = (mx - x) / xScale
+        val nmy = (my - y) / yScale
+        if (this is IClickableElement)
+            if(clicked(nmx, nmy, button)) return true
+        addedWidgets.mutableForEach {
+            if(it.onMouseRelease(nmx, nmy, button)) return true
+        }
+        return false
+    }
+
+    @LuaProperty(exportPropertySetter = false)
+    var parent: BaseComponent? = null
 }

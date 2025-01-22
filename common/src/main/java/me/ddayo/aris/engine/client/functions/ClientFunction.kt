@@ -1,11 +1,9 @@
-package me.ddayo.aris.client.engine.functions
+package me.ddayo.aris.engine.client.functions
 
 import me.ddayo.aris.LuaFunc
-import me.ddayo.aris.client.engine.ClientMainEngine
+import me.ddayo.aris.client.gui.BaseComponent
+import me.ddayo.aris.client.gui.BaseRectComponent
 import me.ddayo.aris.client.gui.ImageResource
-import me.ddayo.aris.client.gui.element.ScriptClickableRenderer
-import me.ddayo.aris.client.gui.element.ScriptDefaultTextRenderer
-import me.ddayo.aris.client.gui.element.ScriptImageRenderer
 import me.ddayo.aris.math.Area
 import me.ddayo.aris.math.AreaBuilder
 import me.ddayo.aris.math.Point
@@ -13,13 +11,14 @@ import me.ddayo.aris.math.Point.Companion.with
 import me.ddayo.aris.luagen.LuaFunction
 import me.ddayo.aris.luagen.LuaProvider
 import me.ddayo.aris.client.gui.ScreenRenderer
-import me.ddayo.aris.client.gui.element.ScriptItemRenderer
-import me.ddayo.aris.engine.LuaItemStack
+import me.ddayo.aris.client.gui.element.*
+import me.ddayo.aris.engine.wrapper.LuaItemStack
+import me.ddayo.aris.engine.client.ClientMainEngine
 import net.fabricmc.api.EnvType
 import net.fabricmc.api.Environment
 import net.minecraft.client.Minecraft
 
-@LuaProvider(ClientMainEngine.PROVIDER)
+@LuaProvider(ClientMainEngine.PROVIDER, library = "aris")
 @Environment(EnvType.CLIENT)
 object ClientFunction {
     @LuaFunction(name = "create_area_builder")
@@ -41,9 +40,15 @@ object ClientFunction {
     @LuaFunction("create_clickable")
     fun createClickable(onClick: LuaFunc, x: Int, y: Int, width: Int, height: Int) =
         ScriptClickableRenderer(
-            { onClick.call() },
+            onClick::call,
             Area(x with y, x with (y + height), (x + width) with (y + height), (x + width) with y)
         )
+
+    @LuaFunction("create_color_renderer")
+    fun createColorRenderer(r: Int, g: Int, b: Int, a: Int) = ScriptColorRenderer(r, g, b, a)
+
+    @LuaFunction("create_color_renderer")
+    fun createColorRenderer(color: Long) = ScriptColorRenderer(color)
 
     @LuaFunction("create_default_text_renderer")
     fun createDefaultTextRenderer(text: String, color: Int) =
@@ -59,6 +64,12 @@ object ClientFunction {
     fun loadImageRuntime(name: String, path: String): ImageResource {
         return ImageResource.getOrCreate(path)
     }
+
+    @LuaFunction("create_component")
+    fun createComponent() = BaseComponent()
+
+    @LuaFunction("create_rect_component")
+    fun createRectComponent() = BaseRectComponent()
 
     @LuaFunction("close_screen")
     fun closeScreen() = Minecraft.getInstance().setScreen(null)

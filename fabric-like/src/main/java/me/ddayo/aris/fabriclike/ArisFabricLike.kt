@@ -6,6 +6,7 @@ import me.ddayo.aris.Aris
 import me.ddayo.aris.fabriclike.S2CNetworking.sendDataPacket
 import me.ddayo.aris.fabriclike.S2CNetworking.sendOpenScriptPacket
 import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback
+import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents
 import net.fabricmc.fabric.api.networking.v1.ServerPlayConnectionEvents
 import net.minecraft.commands.Commands.argument
 import net.minecraft.commands.Commands.literal
@@ -16,7 +17,10 @@ object ArisFabricLike {
     fun init() {
         Aris.init()
         ServerPlayConnectionEvents.JOIN.register { handler, sender, server ->
-            Aris.onServerStart()
+            Aris.onServerStart(server)
+        }
+        ServerTickEvents.START_SERVER_TICK.register {
+            Aris.onServerTick()
         }
         CommandRegistrationCallback.EVENT.register { dispatcher, registry, _ ->
             dispatcher.register(

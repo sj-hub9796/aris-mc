@@ -1,7 +1,7 @@
 package me.ddayo.aris.client.gui.element
 
 import me.ddayo.aris.ILuaStaticDecl
-import me.ddayo.aris.client.engine.ClientMainEngine
+import me.ddayo.aris.engine.client.ClientMainEngine
 import me.ddayo.aris.client.gui.BaseComponent
 import me.ddayo.aris.lua.glue.LuaClientOnlyGenerated
 import me.ddayo.aris.math.Area

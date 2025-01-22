@@ -1,10 +1,10 @@
 package me.ddayo.aris.client.gui.element
 
 import me.ddayo.aris.ILuaStaticDecl
-import me.ddayo.aris.client.engine.ClientMainEngine
+import me.ddayo.aris.engine.client.ClientMainEngine
 import me.ddayo.aris.client.gui.BaseComponent
 import me.ddayo.aris.client.gui.RenderUtil
-import me.ddayo.aris.engine.LuaItemStack
+import me.ddayo.aris.engine.wrapper.LuaItemStack
 import me.ddayo.aris.lua.glue.LuaClientOnlyGenerated
 import me.ddayo.aris.luagen.LuaProperty
 import me.ddayo.aris.luagen.LuaProvider

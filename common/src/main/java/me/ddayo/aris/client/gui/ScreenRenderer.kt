@@ -2,12 +2,11 @@ package me.ddayo.aris.client.gui
 
 import com.mojang.blaze3d.systems.RenderSystem
 import me.ddayo.aris.ILuaStaticDecl
-import me.ddayo.aris.client.engine.ClientMainEngine
-import me.ddayo.aris.client.gui.element.IClickableElement
+import me.ddayo.aris.engine.client.ClientMainEngine
 import me.ddayo.aris.lua.glue.LuaClientOnlyGenerated
 import me.ddayo.aris.luagen.LuaFunction
+import me.ddayo.aris.luagen.LuaProperty
 import me.ddayo.aris.luagen.LuaProvider
-import me.ddayo.aris.util.ListExtensions.mutableForEach
 import net.minecraft.client.Minecraft
 import net.minecraft.client.gui.GuiGraphics
 import net.minecraft.client.gui.screens.Screen
@@ -23,6 +22,17 @@ class ScreenRenderer : BaseRectComponent(), ILuaStaticDecl by LuaClientOnlyGener
         fixedWidth = 1920.0
         fixedHeight = 1080.0
     }
+
+    @LuaProperty("can_exit_with_esc")
+    var canExitWithEsc = true
+
+    @LuaProperty("window_width", exportPropertySetter = false)
+    var windowWidth = 0.0
+        private set
+
+    @LuaProperty("window_height", exportPropertySetter = false)
+    var windowHeight = 0.0
+        private set
 
     /* May dependent to Minecraft */
 
@@ -41,21 +51,13 @@ class ScreenRenderer : BaseRectComponent(), ILuaStaticDecl by LuaClientOnlyGener
                 }
 
                 RenderUtil.renderer.loadMatrix(guiGraphics) {
-                    readyRender()
                     this@ScreenRenderer.render(this, i.toDouble(), j.toDouble(), f)
                 }
 
                 super.render(guiGraphics, i, j, f)
             }
 
-            override fun mouseReleased(i: Double, j: Double, button: Int): Boolean {
-                val (mx, my) = makePointFixed(i, j)
-                addedWidgets.filterIsInstance<IClickableElement>().mutableForEach {
-                    if (it.clicked(mx, my, button))
-                        return true
-                }
-                return false
-            }
+            override fun mouseReleased(i: Double, j: Double, button: Int) = onMouseRelease(i, j, button)
 
             override fun onClose() {
                 super.onClose()
@@ -64,12 +66,16 @@ class ScreenRenderer : BaseRectComponent(), ILuaStaticDecl by LuaClientOnlyGener
 
             override fun init() {
                 x = (width - height.toDouble() * fixedWidth / fixedHeight) / 2
+                windowWidth = width.toDouble()
+                windowHeight = height.toDouble()
 
                 super.init()
 
                 this@ScreenRenderer.width = height.toDouble() * fixedWidth / fixedHeight
                 this@ScreenRenderer.height = height.toDouble()
             }
+
+            override fun shouldCloseOnEsc() = canExitWithEsc
         }
         Minecraft.getInstance().setScreen(attachedScreen as Screen)
     }

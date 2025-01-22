@@ -6,27 +6,15 @@ import net.minecraft.client.KeyMapping
 object KeyBindingHelper {
     class KeyNotExistsException(name: String): Exception("Key with name $name not exists")
 
-    private val keyBindings = mutableMapOf<String, Pair<KeyMapping, MutableList<() -> Unit>>>()
+    private val keyBindings = mutableMapOf<String, KeyMapping>()
+    fun getKey(name: String) = keyBindings[name] ?: throw KeyNotExistsException(name)
     fun register(binding: KeyMapping) {
-        keyBindings[binding.name] = (registerPlatform(binding) to mutableListOf())
+        keyBindings[binding.name] = registerPlatform(binding)
     }
-
-    fun registerAction(key: String, action: () -> Unit) {
-        keyBindings[key]?.second?.add(action) ?: throw KeyNotExistsException(key)
-    }
-
-    fun clearBindingActions() = keyBindings.values.forEach { it.second.clear() }
 
     @JvmStatic
     @ExpectPlatform
     fun registerPlatform(binding: KeyMapping): KeyMapping {
         throw NotImplementedError()
-    }
-
-    fun tickKeyBindings() {
-        keyBindings.forEach { name, (binding, action) ->
-            while(binding.consumeClick())
-                action.forEach { it() }
-        }
     }
 }
