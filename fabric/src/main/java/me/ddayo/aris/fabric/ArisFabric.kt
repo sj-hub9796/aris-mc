@@ -19,12 +19,12 @@ class ArisFabric: ModInitializer {
 
     val initEngineAddOn = mutableListOf<EngineInitializer>()
     override fun onInitialize() {
-        ArisFabricLike.init()
         val fabricLoader = FabricLoader.getInstance()
         fabricLoader.getEntrypointContainers("aris-init", EngineInitializer::class.java)
             .forEach {
                 LogManager.getLogger().info("AddOn for init engine registered: " + it.provider.metadata.id)
                 initEngineAddOn.add(it.entrypoint)
             }
+        ArisFabricLike.init()
     }
 }
