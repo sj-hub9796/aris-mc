@@ -40,7 +40,7 @@ open class MCBaseEngine(lua: Lua) : LuaEngine(lua, errorMessageHandler = { LogMa
     }
 
 
-    override fun createTask(code: String, name: String, repeat: Boolean): LuaTask {
+    override fun createTask(code: String, name: String, repeat: Boolean): LuaCodeTask {
         processedTasks.add(name)
         return super.createTask(code, name, repeat)
     }

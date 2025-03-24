@@ -42,7 +42,6 @@ object Aris {
     const val MOD_ID = "aris"
     const val VERSION = "0.1.0"
 
-    @OptIn(ReferenceMayKeepAlive::class)
     fun init() {
         val engine = InitEngine.create(LuaJit())
         while(engine.tasks.isNotEmpty()) {
