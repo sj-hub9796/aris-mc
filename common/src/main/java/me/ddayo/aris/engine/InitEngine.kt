@@ -20,14 +20,5 @@ open class InitEngine protected constructor(lua: Lua) : MCBaseEngine(lua) {
         EngineAddOn.initEngineAddOns().forEach {
             it.initLua(this)
         }
-
-        lua.getGlobal("aris")
-        if (lua.isNoneOrNil(-1)) {
-            lua.pop(1)
-            lua.newTable()
-        }
-        lua.getGlobal("aris_init")
-        lua.setField(-2, "init")
-        lua.setGlobal("aris")
     }
 }

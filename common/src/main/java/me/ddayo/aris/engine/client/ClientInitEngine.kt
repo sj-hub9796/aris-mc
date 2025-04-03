@@ -18,21 +18,6 @@ class ClientInitEngine(lua: Lua): InitEngine(lua) {
             it.initLua(this)
         }
 
-        lua.getGlobal("aris")
-        if(lua.isNoneOrNil(-1)) {
-            lua.pop(1)
-            lua.newTable()
-        }
-        lua.getField(-1, "init")
-        if(lua.isNoneOrNil(-1)) {
-            lua.pop(1)
-            lua.newTable()
-        }
-        lua.getGlobal("aris_client_init")
-        lua.setField(-2, "client")
-        lua.setField(-2, "init")
-        lua.setGlobal("aris")
-
         File("robots/client-init").listFiles()?.forEach {
             createTask(it, it.nameWithoutExtension)
         }

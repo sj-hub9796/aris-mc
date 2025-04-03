@@ -9,7 +9,7 @@ import net.minecraft.core.registries.BuiltInRegistries
 import net.minecraft.resources.ResourceLocation
 import net.minecraft.world.item.Item
 
-@LuaProvider(InitEngine.PROVIDER, library = "aris_init")
+@LuaProvider(InitEngine.PROVIDER, library = "aris.init")
 object InitFunction {
     @LuaFunction("create_item")
     fun registerItem(key: String) {

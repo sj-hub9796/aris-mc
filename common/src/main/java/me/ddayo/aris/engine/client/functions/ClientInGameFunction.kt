@@ -4,6 +4,7 @@ import me.ddayo.aris.LuaFunc
 import me.ddayo.aris.client.gui.HudRenderer
 import me.ddayo.aris.engine.wrapper.LuaItemStack
 import me.ddayo.aris.engine.client.ClientInGameEngine
+import me.ddayo.aris.engine.networking.Packet
 import me.ddayo.aris.luagen.LuaFunction
 import me.ddayo.aris.luagen.LuaProvider
 import me.ddayo.aris.luagen.RetrieveEngine
@@ -12,7 +13,7 @@ import net.minecraft.network.chat.Component
 import net.minecraft.world.item.ItemStack
 
 
-@LuaProvider(ClientInGameEngine.PROVIDER, library = "aris")
+@LuaProvider(ClientInGameEngine.PROVIDER, library = "aris.game.client")
 object ClientInGameFunction {
     private val mc by lazy { Minecraft.getInstance() }
     @LuaFunction("send_system_message")
@@ -54,4 +55,14 @@ object ClientInGameFunction {
 
     @LuaFunction("add_on_key_pressed")
     fun onKeyPressed(@RetrieveEngine engine: ClientInGameEngine, key: String, function: LuaFunc) = engine.registerKeyHook(key, function)
+
+    @LuaFunction("send_packet")
+    fun sendC2SPacket(packetOf: String) {
+
+    }
+
+    @LuaFunction("send_packet")
+    fun sendC2SPacket(packetOf: String, packet: Packet) {
+
+    }
 }

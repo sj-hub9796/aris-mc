@@ -7,6 +7,7 @@ import me.ddayo.aris.lua.glue.ClientInGameOnlyGenerated
 import me.ddayo.aris.util.ListExtensions.mutableForEach
 import net.minecraft.client.KeyMapping
 import net.minecraft.world.item.ItemStack
+import org.apache.logging.log4j.LogManager
 import party.iroiro.luajava.Lua
 import java.io.File
 

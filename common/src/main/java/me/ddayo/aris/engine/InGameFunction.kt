@@ -7,7 +7,7 @@ import me.ddayo.aris.luagen.LuaProvider
 import me.ddayo.aris.luagen.RetrieveEngine
 
 
-@LuaProvider(InGameEngine.PROVIDER, library = "aris")
+@LuaProvider(InGameEngine.PROVIDER, library = "aris.game")
 object InGameFunction {
     @LuaFunction("add_on_use_item")
     fun onUseItemHook(@RetrieveEngine engine: InGameEngine, item: String, func: LuaFunc) {

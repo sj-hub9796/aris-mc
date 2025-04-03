@@ -18,7 +18,7 @@ import net.fabricmc.api.EnvType
 import net.fabricmc.api.Environment
 import net.minecraft.client.Minecraft
 
-@LuaProvider(ClientMainEngine.PROVIDER, library = "aris")
+@LuaProvider(ClientMainEngine.PROVIDER, library = "aris.client")
 @Environment(EnvType.CLIENT)
 object ClientFunction {
     @LuaFunction(name = "create_area_builder")

@@ -9,13 +9,17 @@ import me.ddayo.aris.lua.glue.InGameGenerated
 import me.ddayo.aris.luagen.LuaFunction
 import me.ddayo.aris.luagen.LuaProperty
 import me.ddayo.aris.luagen.LuaProvider
+import net.minecraft.core.registries.Registries
 import net.minecraft.network.chat.Component
 import net.minecraft.server.level.ServerPlayer
 import net.minecraft.world.InteractionHand
+import net.minecraft.world.damagesource.DamageSource
+import net.minecraft.world.damagesource.DamageTypes
 import net.minecraft.world.phys.Vec3
+import org.apache.logging.log4j.LogManager
 
 
-@LuaProvider(InGameEngine.PROVIDER)
+@LuaProvider(InGameEngine.PROVIDER, library = "aris")
 object LuaServerPlayerFunctions: CoroutineProvider {
     @LuaFunction(name = "iter_players")
     fun iterPlayers(fn: LuaFunc) = coroutine<Unit> {
@@ -23,10 +27,15 @@ object LuaServerPlayerFunctions: CoroutineProvider {
             fn.await(this@coroutine, LuaServerPlayer(it))
         }
     }
+
+    @LuaFunction(name = "add_damage")
+    fun damagePlayer(player: LuaEntity, damage: Double) {
+        player.inner.hurt(player.inner.damageSources().fellOutOfWorld(), damage.toFloat())
+    }
 }
 
 @LuaProvider(InGameEngine.PROVIDER)
-class LuaServerPlayer(private val player: ServerPlayer) : LuaPlayerEntity(player),
+class LuaServerPlayer(player: ServerPlayer) : LuaPlayerEntity(player), CoroutineProvider,
     ILuaStaticDecl by InGameGenerated.LuaServerPlayer_LuaGenerated {
 
     @LuaProperty("main_hand_item")
@@ -65,5 +74,21 @@ class LuaServerPlayer(private val player: ServerPlayer) : LuaPlayerEntity(player
     @LuaFunction("move_to")
     fun moveTo(x: Double, y: Double, z: Double) {
         player.moveTo(x, y, z)
+    }
+
+    @LuaFunction("send_message_text")
+    fun sendMessage(msg: String) = sendMessage(Component.literal(msg))
+
+    @LuaFunction("send_message")
+    fun sendMessage(msg: Component) {
+        player.sendSystemMessage(msg)
+    }
+
+    @LuaFunction(name = "iter_player_nearby")
+    fun iterPlayers(fn: LuaFunc, lnt: Double) = coroutine<Unit> {
+        Aris.server.playerList.players.forEach {
+            if(it.position().distanceTo(player.position()) < lnt)
+                fn.await(this@coroutine, LuaServerPlayer(it))
+        }
     }
 }

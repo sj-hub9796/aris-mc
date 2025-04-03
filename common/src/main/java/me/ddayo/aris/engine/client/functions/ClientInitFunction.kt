@@ -9,7 +9,7 @@ import net.fabricmc.api.Environment
 import net.minecraft.client.KeyMapping
 
 @Environment(EnvType.CLIENT)
-@LuaProvider(ClientInitEngine.PROVIDER, library = "aris_client_init")
+@LuaProvider(ClientInitEngine.PROVIDER, library = "aris.init.client")
 object ClientInitFunction {
     @LuaFunction("create_keybinding")
     fun createKeyBinding(key: String, code: Int, category: String) {
