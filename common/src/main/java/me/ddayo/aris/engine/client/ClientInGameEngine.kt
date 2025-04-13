@@ -6,6 +6,7 @@ import me.ddayo.aris.client.gui.HudRenderer
 import me.ddayo.aris.lua.glue.ClientInGameOnlyGenerated
 import me.ddayo.aris.util.ListExtensions.mutableForEach
 import net.minecraft.client.KeyMapping
+import net.minecraft.resources.ResourceLocation
 import net.minecraft.world.item.ItemStack
 import org.apache.logging.log4j.LogManager
 import party.iroiro.luajava.Lua
@@ -54,6 +55,7 @@ class ClientInGameEngine protected constructor(lua: Lua) : ClientMainEngine(lua)
 
     val enabledHud = mutableListOf<HudRenderer>()
 
+    val functions = mutableMapOf<ResourceLocation, LuaFunc>()
     val clientStringData = mutableMapOf<String, String>()
     val clientNumberData = mutableMapOf<String, Double>()
     val clientItemStackData = mutableMapOf<String, ItemStack>()

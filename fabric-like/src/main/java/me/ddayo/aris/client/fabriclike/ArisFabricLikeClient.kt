@@ -43,6 +43,6 @@ object ArisFabricLikeClient {
                 }
             }
         }
-        C2SNetworking.register()
+        ClientNetworking.register()
     }
 }

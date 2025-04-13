@@ -3,8 +3,8 @@ package me.ddayo.aris.fabriclike
 import com.mojang.brigadier.arguments.DoubleArgumentType
 import com.mojang.brigadier.arguments.StringArgumentType
 import me.ddayo.aris.Aris
-import me.ddayo.aris.fabriclike.S2CNetworking.sendDataPacket
-import me.ddayo.aris.fabriclike.S2CNetworking.sendOpenScriptPacket
+import me.ddayo.aris.fabriclike.ServerNetworking.sendDataPacket
+import me.ddayo.aris.fabriclike.ServerNetworking.sendOpenScriptPacket
 import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents
 import net.fabricmc.fabric.api.networking.v1.ServerPlayConnectionEvents
@@ -35,8 +35,8 @@ object ArisFabricLike {
                                             val script = StringArgumentType.getString(it, "script")
                                             players.forEach { p ->
                                                 p.sendOpenScriptPacket(
-                                                    S2CNetworking.Operation.OPEN,
-                                                    S2CNetworking.EngineSpace.IN_GAME,
+                                                    ServerNetworking.Operation.OPEN,
+                                                    ServerNetworking.EngineSpace.IN_GAME,
                                                     script
                                                 )
                                             }
@@ -92,6 +92,6 @@ object ArisFabricLike {
             )
 
         }
-        S2CNetworking.register()
+        ServerNetworking.register()
     }
 }

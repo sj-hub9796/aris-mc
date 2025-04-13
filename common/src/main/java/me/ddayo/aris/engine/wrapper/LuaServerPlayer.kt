@@ -19,7 +19,7 @@ import net.minecraft.world.phys.Vec3
 import org.apache.logging.log4j.LogManager
 
 
-@LuaProvider(InGameEngine.PROVIDER, library = "aris")
+@LuaProvider(InGameEngine.PROVIDER, library = "aris.game")
 object LuaServerPlayerFunctions: CoroutineProvider {
     @LuaFunction(name = "iter_players")
     fun iterPlayers(fn: LuaFunc) = coroutine<Unit> {

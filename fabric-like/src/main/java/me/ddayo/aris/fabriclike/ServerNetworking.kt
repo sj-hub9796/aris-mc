@@ -1,13 +1,19 @@
 package me.ddayo.aris.fabriclike
 
+import dev.architectury.injectables.annotations.ExpectPlatform
 import me.ddayo.aris.Aris
+import me.ddayo.aris.engine.networking.Packet
+import me.ddayo.aris.engine.networking.S2CPacket
+import me.ddayo.aris.engine.wrapper.LuaPlayerEntity
+import me.ddayo.aris.engine.wrapper.LuaServerPlayer
+import me.ddayo.aris.luagen.LuaFunction
 import net.fabricmc.fabric.api.networking.v1.PacketByteBufs
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking
 import net.minecraft.resources.ResourceLocation
 import net.minecraft.server.level.ServerPlayer
 import net.minecraft.world.item.ItemStack
 
-object S2CNetworking {
+object ServerNetworking {
     enum class Operation {
         OPEN,
         RELOAD,
