@@ -2,6 +2,7 @@ package me.ddayo.aris.engine
 
 import me.ddayo.aris.LuaFunc
 import me.ddayo.aris.lua.glue.InGameGenerated
+import net.minecraft.resources.ResourceLocation
 import party.iroiro.luajava.Lua
 import java.io.File
 
@@ -31,4 +32,5 @@ class InGameEngine(lua: Lua): MCBaseEngine(lua) {
     }
 
     val itemUseHook = mutableMapOf<String, MutableList<LuaFunc>>()
+    val packetFunctions = mutableMapOf<ResourceLocation, LuaFunc>()
 }

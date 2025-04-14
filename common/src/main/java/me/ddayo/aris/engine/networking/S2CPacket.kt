@@ -8,7 +8,6 @@ import me.ddayo.aris.engine.InGameEngine
 import me.ddayo.aris.engine.InitEngine
 import me.ddayo.aris.engine.client.ClientInGameEngine
 import me.ddayo.aris.engine.wrapper.LuaServerPlayer
-import me.ddayo.aris.lua.glue.InGameGenerated
 import me.ddayo.aris.lua.glue.InitGenerated
 import me.ddayo.aris.luagen.LuaFunction
 import me.ddayo.aris.luagen.LuaProvider
@@ -20,16 +19,17 @@ import org.apache.logging.log4j.LogManager
 @LuaProvider(InitEngine.PROVIDER)
 class S2CPacket(id: ResourceLocation) : Packet(id), ILuaStaticDecl by InitGenerated.S2CPacket_LuaGenerated {
     override fun parse(buf: FriendlyByteBuf): Array<Pair<ResourceLocation, Any?>> {
-        return subPackets.toList().map { it.first to it.second.process(buf) }.toTypedArray()
+        return frozen.map { it.first to it.second.process(buf) }.toTypedArray()
     }
 
-    override fun execute(parsed: Array<Pair<ResourceLocation, Any?>>) {
-        ClientInGameEngine.INSTANCE!!.functions[id]?.callAsTaskRawArg { task ->
+    override fun getFunction() = ClientInGameEngine.INSTANCE!!.packetFunctions[id]
+
+    fun execute(parsed: Array<Pair<ResourceLocation, Any?>>) {
+        getFunction()?.callAsTaskRawArg { task ->
             task.coroutine.newTable()
-            for((rl, act) in parsed) {
+            for((rl, act) in parsed)
                 if(engine.luaMain.pushNoInline(task.coroutine, act) == 1)
                     task.coroutine.setField(-2, rl.path)
-            }
             1
         } ?: run {
             LogManager.getLogger().error("Not declared packet $id")
@@ -56,7 +56,7 @@ object S2CPacketSenderHandler {
 object S2CPacketReceiverHandler {
     @LuaFunction("register_s2c_packet_handler")
     fun registerHandler(id: String, func: LuaFunc) {
-        ClientInGameEngine.INSTANCE!!.functions[ResourceLocation(Aris.MOD_ID, id)] = func
+        ClientInGameEngine.INSTANCE!!.packetFunctions[ResourceLocation(Aris.MOD_ID, id)] = func
     }
 }
 

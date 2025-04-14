@@ -3,14 +3,17 @@ package me.ddayo.aris.engine.networking
 import io.netty.buffer.Unpooled
 import me.ddayo.aris.Aris
 import me.ddayo.aris.ILuaStaticDecl
+import me.ddayo.aris.LuaFunc
 import me.ddayo.aris.engine.InGameEngine
 import me.ddayo.aris.engine.InitEngine
+import me.ddayo.aris.engine.client.ClientInGameEngine
 import me.ddayo.aris.lua.glue.InGameGenerated
 import me.ddayo.aris.lua.glue.InitGenerated
 import me.ddayo.aris.luagen.LuaFunction
 import me.ddayo.aris.luagen.LuaProvider
 import net.minecraft.network.FriendlyByteBuf
 import net.minecraft.resources.ResourceLocation
+import org.apache.logging.log4j.LogManager
 
 @LuaProvider(InitEngine.PROVIDER, library = "aris.init.networking")
 object PacketBuilderFunctions {
@@ -64,9 +67,10 @@ abstract class Packet(val id: ResourceLocation): ILuaStaticDecl by InitGenerated
     }
 
     abstract fun parse(buf: FriendlyByteBuf): Array<Pair<ResourceLocation, Any?>>
-    abstract fun execute(parsed: Array<Pair<ResourceLocation, Any?>>)
+    abstract fun getFunction(): LuaFunc?
 
     @LuaProvider(InGameEngine.PROVIDER)
+    @LuaProvider(ClientInGameEngine.PROVIDER)
     public inner class Builder: ILuaStaticDecl by InGameGenerated.Builder_LuaGenerated {
         val inner = mutableMapOf<ResourceLocation, Any?>()
         // @LuaFunction

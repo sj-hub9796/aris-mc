@@ -1,12 +1,7 @@
 package me.ddayo.aris.fabriclike
 
-import dev.architectury.injectables.annotations.ExpectPlatform
 import me.ddayo.aris.Aris
-import me.ddayo.aris.engine.networking.Packet
-import me.ddayo.aris.engine.networking.S2CPacket
-import me.ddayo.aris.engine.wrapper.LuaPlayerEntity
-import me.ddayo.aris.engine.wrapper.LuaServerPlayer
-import me.ddayo.aris.luagen.LuaFunction
+import me.ddayo.aris.engine.networking.C2SPacketHandler
 import net.fabricmc.fabric.api.networking.v1.PacketByteBufs
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking
 import net.minecraft.resources.ResourceLocation
@@ -59,6 +54,13 @@ object ServerNetworking {
         })
 
     fun register() {
-
+        ServerPlayNetworking.registerGlobalReceiver(ResourceLocation(Aris.MOD_ID, "generic_c2s")) { server, player, handler, buffer, sender ->
+            val of = buffer.readResourceLocation()
+            val packet = C2SPacketHandler.packets[of]!!
+            val parsed = packet.parse(buffer)
+            server.execute {
+                packet.execute(player, parsed)
+            }
+        }
     }
 }
