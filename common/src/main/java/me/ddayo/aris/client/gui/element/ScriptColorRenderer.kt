@@ -1,9 +1,11 @@
 package me.ddayo.aris.client.gui.element
 
 import com.mojang.blaze3d.systems.RenderSystem
+import me.ddayo.aris.ILuaStaticDecl
 import me.ddayo.aris.client.gui.BaseRectComponent
 import me.ddayo.aris.client.gui.RenderUtil
 import me.ddayo.aris.engine.client.ClientMainEngine
+import me.ddayo.aris.lua.glue.LuaClientOnlyGenerated
 import me.ddayo.aris.luagen.LuaProperty
 import me.ddayo.aris.luagen.LuaProvider
 import net.minecraft.client.renderer.GameRenderer
@@ -18,7 +20,7 @@ class ScriptColorRenderer(
     var b: Int,
     @LuaProperty
     var a: Int
-) : BaseRectComponent() {
+) : BaseRectComponent(), ILuaStaticDecl by LuaClientOnlyGenerated.ScriptColorRenderer_LuaGenerated {
     @LuaProperty
     var color: Long
         get() = (r.toLong() shl 16) or (g.toLong() shl 8) or b.toLong() or (a.toLong() shl 24)
