@@ -33,4 +33,5 @@ class InGameEngine(lua: Lua): MCBaseEngine(lua) {
 
     val itemUseHook = mutableMapOf<String, MutableList<LuaFunc>>()
     val packetFunctions = mutableMapOf<ResourceLocation, LuaFunc>()
+    val commandFunctions = mutableMapOf<ResourceLocation, LuaFunc>()
 }

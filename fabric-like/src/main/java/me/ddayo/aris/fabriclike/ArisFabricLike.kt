@@ -3,6 +3,7 @@ package me.ddayo.aris.fabriclike
 import com.mojang.brigadier.arguments.DoubleArgumentType
 import com.mojang.brigadier.arguments.StringArgumentType
 import me.ddayo.aris.Aris
+import me.ddayo.aris.engine.command.CommandBuilderFunctions
 import me.ddayo.aris.fabriclike.ServerNetworking.sendDataPacket
 import me.ddayo.aris.fabriclike.ServerNetworking.sendOpenScriptPacket
 import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback
@@ -23,6 +24,8 @@ object ArisFabricLike {
             Aris.onServerTick()
         }
         CommandRegistrationCallback.EVENT.register { dispatcher, registry, _ ->
+            CommandBuilderFunctions.register(dispatcher)
+
             dispatcher.register(
                 literal("aris")
                     .then(
