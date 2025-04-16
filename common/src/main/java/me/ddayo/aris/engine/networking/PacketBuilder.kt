@@ -13,8 +13,13 @@ import me.ddayo.aris.luagen.LuaFunction
 import me.ddayo.aris.luagen.LuaProvider
 import net.minecraft.network.FriendlyByteBuf
 import net.minecraft.resources.ResourceLocation
-import org.apache.logging.log4j.LogManager
 
+/**
+ * This file introduce how to add data into packet
+ * You may do:
+ * 1. declare custom function that accepts custom argument
+ * 2. declare custom function that pack data into builder
+ */
 @LuaProvider(InitEngine.PROVIDER, library = "aris.init.networking")
 object PacketBuilderFunctions {
     @LuaFunction("integer_arg")
@@ -48,7 +53,7 @@ abstract class AbstractPackableData<T>(val id: ResourceLocation) {
 }
 
 @LuaProvider(InitEngine.PROVIDER)
-abstract class Packet(val id: ResourceLocation): ILuaStaticDecl by InitGenerated.Packet_LuaGenerated {
+abstract class PacketDeclaration(val id: ResourceLocation): ILuaStaticDecl by InitGenerated.PacketDeclaration_LuaGenerated {
     protected val subPackets = mutableMapOf<ResourceLocation, AbstractPackableData<*>>()
 
     @LuaFunction

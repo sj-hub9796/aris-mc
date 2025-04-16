@@ -13,61 +13,63 @@ import me.ddayo.aris.luagen.LuaFunction
 import me.ddayo.aris.luagen.LuaProvider
 import net.minecraft.network.FriendlyByteBuf
 import net.minecraft.resources.ResourceLocation
+import net.minecraft.server.level.ServerPlayer
 import org.apache.logging.log4j.LogManager
 
 
 @LuaProvider(InitEngine.PROVIDER)
-class S2CPacket(id: ResourceLocation) : Packet(id), ILuaStaticDecl by InitGenerated.S2CPacket_LuaGenerated {
+class C2SPacketDeclaration(id: ResourceLocation) : PacketDeclaration(id), ILuaStaticDecl by InitGenerated.C2SPacketDeclaration_LuaGenerated {
     override fun parse(buf: FriendlyByteBuf): Array<Pair<ResourceLocation, Any?>> {
         return frozen.map { it.first to it.second.process(buf) }.toTypedArray()
     }
 
-    override fun getFunction() = ClientInGameEngine.INSTANCE!!.packetFunctions[id]
+    override fun getFunction() = InGameEngine.INSTANCE!!.packetFunctions[id]
 
-    fun execute(parsed: Array<Pair<ResourceLocation, Any?>>) {
+    fun execute(player: ServerPlayer, parsed: Array<Pair<ResourceLocation, Any?>>) {
         getFunction()?.callAsTaskRawArg { task ->
+            engine.luaMain.pushNoInline(task.coroutine, LuaServerPlayer(player))
             task.coroutine.newTable()
             for((rl, act) in parsed)
                 if(engine.luaMain.pushNoInline(task.coroutine, act) == 1)
                     task.coroutine.setField(-2, rl.path)
-            1
+            2
         } ?: run {
             LogManager.getLogger().error("Not declared packet $id")
         }
     }
 }
 
-@LuaProvider(InGameEngine.PROVIDER, library = "aris.game")
-object S2CPacketSenderHandler {
-    @LuaFunction("send_s2c_packet")
+@LuaProvider(ClientInGameEngine.PROVIDER, library = "aris.game.client")
+object C2SPacketSenderHandler {
+    @LuaFunction("send_c2s_packet")
     @ExpectPlatform
     @JvmStatic
-    fun sendS2CPacket(player: LuaServerPlayer, packet: Packet.Builder) {
+    fun sendC2SPacket(packet: PacketDeclaration.Builder) {
         throw NotImplementedError()
     }
 
-    @LuaFunction("create_s2c_packet_builder")
-    fun createPacketBuilder(of: String): Packet.Builder {
-        return S2CPacketHandler.packets[ResourceLocation(Aris.MOD_ID, of)]!!.Builder()
+    @LuaFunction("create_c2s_packet_builder")
+    fun createPacketBuilder(of: String): PacketDeclaration.Builder {
+        return C2SPacketHandler.packets[ResourceLocation(Aris.MOD_ID, of)]!!.Builder()
     }
 }
 
-@LuaProvider(ClientInGameEngine.PROVIDER, library = "aris.game.client")
-object S2CPacketReceiverHandler {
-    @LuaFunction("register_s2c_packet_handler")
+@LuaProvider(InGameEngine.PROVIDER, library = "aris.game")
+object C2SPacketReceiverHandler {
+    @LuaFunction("register_c2s_packet_handler")
     fun registerHandler(id: String, func: LuaFunc) {
-        ClientInGameEngine.INSTANCE!!.packetFunctions[ResourceLocation(Aris.MOD_ID, id)] = func
+        InGameEngine.INSTANCE!!.packetFunctions[ResourceLocation(Aris.MOD_ID, id)] = func
     }
 }
 
 @LuaProvider(InitEngine.PROVIDER, library = "aris.init")
-object S2CPacketHandler {
-    val packets = mutableMapOf<ResourceLocation, S2CPacket>()
+object C2SPacketHandler {
+    val packets = mutableMapOf<ResourceLocation, C2SPacketDeclaration>()
 
-    @LuaFunction("create_s2c_packet")
-    fun createS2CPacket(_id: String): S2CPacket {
+    @LuaFunction("create_c2s_packet")
+    fun createC2SPacket(_id: String): C2SPacketDeclaration {
         val id = ResourceLocation(Aris.MOD_ID, _id)
-        val packet = S2CPacket(id)
+        val packet = C2SPacketDeclaration(id)
         packets[id] = packet
         return packet
     }
