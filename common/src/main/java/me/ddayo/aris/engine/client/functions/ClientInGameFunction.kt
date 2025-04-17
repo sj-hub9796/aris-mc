@@ -55,14 +55,4 @@ object ClientInGameFunction {
 
     @LuaFunction("add_on_key_pressed")
     fun onKeyPressed(@RetrieveEngine engine: ClientInGameEngine, key: String, function: LuaFunc) = engine.registerKeyHook(key, function)
-
-    @LuaFunction("send_packet")
-    fun sendC2SPacket(packetOf: String) {
-
-    }
-
-    @LuaFunction("send_packet")
-    fun sendC2SPacket(packetOf: String, packet: PacketDeclaration) {
-
-    }
 }
