@@ -17,6 +17,7 @@ open class MCBaseEngine(lua: Lua) : LuaEngine(lua, errorMessageHandler = { LogMa
             1
         }
         lua.setGlobal("__aris_internal_is_processed")
+
         lua.load("""
             function depends_on(task)
                 local cnt = 0
@@ -27,6 +28,7 @@ open class MCBaseEngine(lua: Lua) : LuaEngine(lua, errorMessageHandler = { LogMa
                 end
             end
         """.trimIndent())
+        lua.pCall(0, 0)
     }
 
     private val processedTasks = mutableSetOf<String>()
@@ -35,10 +37,11 @@ open class MCBaseEngine(lua: Lua) : LuaEngine(lua, errorMessageHandler = { LogMa
 
     fun createTask(file: File, _name: String? = null) {
         if (!file.exists()) return
-        val name = _name ?: file.canonicalPath
+        val name = _name ?: file.relativeTo(basePath).absolutePath
         createTask(file.readText(), name)
     }
 
+    open val basePath: File = File("robots")
 
     override fun createTask(code: String, name: String, repeat: Boolean): LuaCodeTask {
         processedTasks.add(name)

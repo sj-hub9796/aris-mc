@@ -32,6 +32,8 @@ class ClientInGameEngine protected constructor(lua: Lua) : ClientMainEngine(lua)
         }
     }
 
+    override val basePath = File("robots/client-game")
+
     init {
         ClientInGameOnlyGenerated.initEngine(this)
     }

@@ -27,6 +27,8 @@ class InGameEngine(lua: Lua): MCBaseEngine(lua) {
         }
     }
 
+    override val basePath = File("robots/game")
+
     init {
         InGameGenerated.initEngine(this)
     }

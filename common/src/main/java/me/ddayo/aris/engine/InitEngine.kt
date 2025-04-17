@@ -15,6 +15,8 @@ open class InitEngine protected constructor(lua: Lua) : MCBaseEngine(lua) {
         }
     }
 
+    override val basePath = File("robots/init")
+
     init {
         InitGenerated.initEngine(this)
         EngineAddOn.initEngineAddOns().forEach {

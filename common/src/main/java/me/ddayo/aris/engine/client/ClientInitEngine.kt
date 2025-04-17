@@ -22,4 +22,6 @@ class ClientInitEngine(lua: Lua): InitEngine(lua) {
             createTask(it, it.nameWithoutExtension)
         }
     }
+
+    override val basePath = File("robots/client-init")
 }

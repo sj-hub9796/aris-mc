@@ -29,6 +29,9 @@ open class ClientMainEngine protected constructor (lua: Lua): MCBaseEngine(lua) 
             }
         }
     }
+
+    override val basePath = File("robots/client")
+
     init {
         LuaClientOnlyGenerated.initEngine(this)
     }
