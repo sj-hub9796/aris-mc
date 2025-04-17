@@ -37,7 +37,7 @@ class S2CPacketDeclaration(id: ResourceLocation) : PacketDeclaration(id), ILuaSt
     }
 }
 
-@LuaProvider(InGameEngine.PROVIDER, library = "aris.game")
+@LuaProvider(InGameEngine.PROVIDER, library = "aris.game.networking")
 object S2CPacketSenderHandler {
     @LuaFunction("send_s2c_packet")
     @ExpectPlatform
@@ -52,7 +52,7 @@ object S2CPacketSenderHandler {
     }
 }
 
-@LuaProvider(ClientInGameEngine.PROVIDER, library = "aris.game.client")
+@LuaProvider(ClientInGameEngine.PROVIDER, library = "aris.game.client.networking")
 object S2CPacketReceiverHandler {
     @LuaFunction("register_s2c_packet_handler")
     fun registerHandler(id: String, func: LuaFunc) {
@@ -60,7 +60,7 @@ object S2CPacketReceiverHandler {
     }
 }
 
-@LuaProvider(InitEngine.PROVIDER, library = "aris.init")
+@LuaProvider(InitEngine.PROVIDER, library = "aris.init.networking")
 object S2CPacketHandler {
     val packets = mutableMapOf<ResourceLocation, S2CPacketDeclaration>()
 

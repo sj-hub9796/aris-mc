@@ -39,7 +39,7 @@ class C2SPacketDeclaration(id: ResourceLocation) : PacketDeclaration(id), ILuaSt
     }
 }
 
-@LuaProvider(ClientInGameEngine.PROVIDER, library = "aris.game.client")
+@LuaProvider(ClientInGameEngine.PROVIDER, library = "aris.game.client.networking")
 object C2SPacketSenderHandler {
     @LuaFunction("send_c2s_packet")
     @ExpectPlatform
@@ -54,7 +54,7 @@ object C2SPacketSenderHandler {
     }
 }
 
-@LuaProvider(InGameEngine.PROVIDER, library = "aris.game")
+@LuaProvider(InGameEngine.PROVIDER, library = "aris.game.networking")
 object C2SPacketReceiverHandler {
     @LuaFunction("register_c2s_packet_handler")
     fun registerHandler(id: String, func: LuaFunc) {
@@ -62,7 +62,7 @@ object C2SPacketReceiverHandler {
     }
 }
 
-@LuaProvider(InitEngine.PROVIDER, library = "aris.init")
+@LuaProvider(InitEngine.PROVIDER, library = "aris.init.networking")
 object C2SPacketHandler {
     val packets = mutableMapOf<ResourceLocation, C2SPacketDeclaration>()
 
