@@ -2,9 +2,11 @@ package me.ddayo.aris.engine
 
 import me.ddayo.aris.Aris
 import me.ddayo.aris.LuaFunc
+import me.ddayo.aris.engine.wrapper.LuaMobEffectInstance
 import me.ddayo.aris.luagen.LuaFunction
 import me.ddayo.aris.luagen.LuaProvider
 import me.ddayo.aris.luagen.RetrieveEngine
+import net.minecraft.resources.ResourceLocation
 
 
 @LuaProvider(InGameEngine.PROVIDER, library = "aris.game")
@@ -39,4 +41,10 @@ object InGameFunction {
         val results = dispatcher.parse(command, server.createCommandSourceStack())
         server.commands.performCommand(results, command)
     }
+
+    @LuaFunction("create_effect_builder")
+    fun createEffectBuilder(of: String) = LuaMobEffectInstance(ResourceLocation(of))
+
+    @LuaFunction("create_effect_builder")
+    fun createEffectBuilder(ns: String, of: String) = LuaMobEffectInstance(ResourceLocation(ns, of))
 }

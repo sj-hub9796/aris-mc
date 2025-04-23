@@ -9,9 +9,13 @@ import me.ddayo.aris.lua.glue.InGameGenerated
 import me.ddayo.aris.luagen.LuaFunction
 import me.ddayo.aris.luagen.LuaProperty
 import me.ddayo.aris.luagen.LuaProvider
+import net.minecraft.core.registries.BuiltInRegistries
+import net.minecraft.core.registries.Registries
 import net.minecraft.network.chat.Component
+import net.minecraft.resources.ResourceLocation
 import net.minecraft.server.level.ServerPlayer
 import net.minecraft.world.InteractionHand
+import net.minecraft.world.effect.MobEffectInstance
 import kotlin.math.cos
 import kotlin.math.sin
 
@@ -117,5 +121,25 @@ class LuaServerPlayer(player: ServerPlayer) : LuaPlayerEntity(player), Coroutine
             if (it.position().distanceTo(player.position()) < lnt && (includeSelf || it != player))
                 fn.await(this@coroutine, LuaServerPlayer(it))
         }
+    }
+
+    @LuaFunction(name = "add_effect")
+    fun addEffect(effect: LuaMobEffectInstance) {
+        player.addEffect(effect.build())
+    }
+
+    @LuaFunction(name = "clear_effect")
+    fun clearEffect() {
+        player.removeAllEffects()
+    }
+
+    @LuaFunction(name = "remove_effect")
+    fun removeEffect(of: String) {
+        player.removeEffect(BuiltInRegistries.MOB_EFFECT.get(ResourceLocation(of))!!)
+    }
+
+    @LuaFunction(name = "remove_effect")
+    fun removeEffect(ns: String, of: String) {
+        player.removeEffect(BuiltInRegistries.MOB_EFFECT.get(ResourceLocation(ns, of))!!)
     }
 }
