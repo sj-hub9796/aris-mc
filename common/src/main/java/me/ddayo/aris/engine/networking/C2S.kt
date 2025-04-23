@@ -41,6 +41,10 @@ class C2SPacketDeclaration(id: ResourceLocation) : PacketDeclaration(id), ILuaSt
 
 @LuaProvider(ClientInGameEngine.PROVIDER, library = "aris.game.client.networking")
 object C2SPacketSenderHandler {
+    /**
+     * 서버로 주어진 패킷을 전송합니다.
+     * @param packet 패킷
+     */
     @LuaFunction("send_c2s_packet")
     @ExpectPlatform
     @JvmStatic
@@ -48,6 +52,10 @@ object C2SPacketSenderHandler {
         throw NotImplementedError()
     }
 
+    /**
+     * 서버로 전송할 패킷을 설정하는 빌더(builder)를 만듭니다.
+     * @param of 전송할 패킷의 id
+     */
     @LuaFunction("create_c2s_packet_builder")
     fun createPacketBuilder(of: String): PacketDeclaration.Builder {
         return C2SPacketHandler.packets[ResourceLocation(Aris.MOD_ID, of)]!!.Builder()
@@ -56,6 +64,11 @@ object C2SPacketSenderHandler {
 
 @LuaProvider(InGameEngine.PROVIDER, library = "aris.game.networking")
 object C2SPacketReceiverHandler {
+    /**
+     * 패킷이 클라이언트로부터 전송됐을때 실행할 함수를 지정합니다.
+     * @param id 패킷 id
+     * @param func 실행할 함수
+     */
     @LuaFunction("register_c2s_packet_handler")
     fun registerHandler(id: String, func: LuaFunc) {
         InGameEngine.INSTANCE!!.packetFunctions[ResourceLocation(Aris.MOD_ID, id)] = func
@@ -66,6 +79,11 @@ object C2SPacketReceiverHandler {
 object C2SPacketHandler {
     val packets = mutableMapOf<ResourceLocation, C2SPacketDeclaration>()
 
+    /**
+     * 패킷을 새로 생성합니다.
+     * @param _id 패킷 id
+     * @return 생성된 패킷 정의 Builder
+     */
     @LuaFunction("create_c2s_packet")
     fun createC2SPacket(_id: String): C2SPacketDeclaration {
         val id = ResourceLocation(Aris.MOD_ID, _id)

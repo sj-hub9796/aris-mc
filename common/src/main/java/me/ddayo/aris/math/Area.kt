@@ -5,11 +5,36 @@ import me.ddayo.aris.lua.glue.LuaGenerated
 import me.ddayo.aris.math.Point.Companion.with
 import me.ddayo.aris.luagen.LuaFunction
 import me.ddayo.aris.luagen.LuaProvider
+import kotlin.math.abs
+import kotlin.math.min
 
+
+@LuaProvider
+object AreaFunctions {
+    /**
+     * @param x x of left-top point
+     * @param y y of left-top point
+     * @param width width of the area
+     * @param height height of the area
+     * @return Area(x with y, x with (y + height), (x + width) with (y + height), (x + width) with y)
+     */
+    @LuaFunction("create_rect_area")
+    fun createRect(x: Double, y: Double, width: Double, height: Double) = Area(x with y, x with (y + height), (x + width) with (y + height), (x + width) with y)
+
+    /**
+     * @return createRect(min(p1.x, p2.x), min(p1.y, p2.y), abs(p1.x - p2.x), abs(p1.y - p2.y))
+     */
+    @LuaFunction("create_rect_area")
+    fun createRect(p1: Point, p2: Point) = createRect(min(p1.x, p2.x), min(p1.y, p2.y), abs(p1.x - p2.x), abs(p1.y - p2.y))
+}
 
 @LuaProvider
 class AreaBuilder: ILuaStaticDecl by LuaGenerated.AreaBuilder_LuaGenerated {
     private val points = mutableListOf<Point>()
+
+    /**
+     * Append the point that constructs node of the area
+     */
     @LuaFunction
     fun append(p: Point) {
         points.add(p)
@@ -52,5 +77,5 @@ class Area(private vararg val points: Point): ILuaStaticDecl by LuaGenerated.Are
     fun center() = centerX with centerY
 
     @LuaFunction("into_string")
-    fun intoString() = "$maxX $maxY $minX $minY"
+    fun intoString() = "Area ($minX, $minY)..($maxX, $maxY)"
 }

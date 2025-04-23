@@ -4,6 +4,18 @@ import me.ddayo.aris.ILuaStaticDecl
 import me.ddayo.aris.lua.glue.LuaGenerated
 import me.ddayo.aris.luagen.LuaFunction
 import me.ddayo.aris.luagen.LuaProvider
+import me.ddayo.aris.math.Point.Companion.with
+
+
+@LuaProvider
+object PointFunctions {
+    /**
+     * Create point object (x, y)
+     * @return Point(x, y)
+     */
+    @LuaFunction("create_point")
+    fun createPoint(x: Double, y: Double) = x with y
+}
 
 @LuaProvider
 data class Point(val x: Double, val y: Double): ILuaStaticDecl by LuaGenerated.Point_LuaGenerated {

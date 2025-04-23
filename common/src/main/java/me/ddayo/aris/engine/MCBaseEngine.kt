@@ -38,6 +38,7 @@ open class MCBaseEngine(lua: Lua) : LuaEngine(lua, errorMessageHandler = { LogMa
     fun createTask(file: File, _name: String? = null) {
         if (!file.exists()) return
         val name = _name ?: file.relativeTo(basePath).absolutePath
+        LogManager.getLogger().info("Create task: $name")
         createTask(file.readText(), name)
     }
 

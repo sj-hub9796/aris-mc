@@ -22,6 +22,11 @@ import net.minecraft.resources.ResourceLocation
 
 @LuaProvider(InGameEngine.PROVIDER, library = "aris.game.command")
 object CommandInGameFunctions {
+    /**
+     * 명령어를 입력했을때 실행할 함수를 지정합니다.
+     * @param of 명령어 id
+     * @param func 실행할 함수
+     */
     @LuaFunction("register_endpoint")
     fun registerEndpoint(of: String, func: LuaFunc) {
         InGameEngine.INSTANCE!!.commandFunctions[ResourceLocation(Aris.MOD_ID, of)] = func
@@ -30,6 +35,11 @@ object CommandInGameFunctions {
 
 @LuaProvider(InitEngine.PROVIDER, library = "aris.init.command")
 object CommandBuilderFunctions {
+    /**
+     * 하위 커멘드를 추가합니다.
+     * @of 추가할 커멘드 이름
+     * @return 여기에서 획득한 값을 커멘드 핸들러에 append해야합니다.
+     */
     @LuaFunction("sub_command")
     fun subCommand(of: String) = object : AbstractCommandHandler() {
         override fun retrieve() = Commands.literal(of)
@@ -37,6 +47,11 @@ object CommandBuilderFunctions {
         }
     }
 
+    /**
+     * 정수 인수를 추가합니다.
+     * @of 추가할 정수 인수 이름
+     * @return 여기에서 획득한 값을 커멘드 핸들러에 append해야합니다.
+     */
     @LuaFunction("integer_arg")
     fun intArg(of: String) = object : AbstractCommandHandler() {
         val rl = ResourceLocation(Aris.MOD_ID, of)
@@ -46,6 +61,11 @@ object CommandBuilderFunctions {
         }
     }
 
+    /**
+     * 실수 인수를 추가합니다.
+     * @of 추가할 실수 인수 이름
+     * @return 여기에서 획득한 값을 커멘드 핸들러에 append해야합니다.
+     */
     @LuaFunction("float_arg")
     fun floatArg(of: String) = object : AbstractCommandHandler() {
         val rl = ResourceLocation(Aris.MOD_ID, of)
@@ -57,6 +77,10 @@ object CommandBuilderFunctions {
 
     val commands = mutableMapOf<ResourceLocation, AbstractCommandHandler>()
 
+    /**
+     * 새로운 명령어를 추가합니다.
+     * @of 추가할 명령어 이름
+     */
     @LuaFunction("create_command")
     fun createCommand(of: String): AbstractCommandHandler {
         val r = object : AbstractCommandHandler() {
@@ -82,6 +106,10 @@ object CommandBuilderFunctions {
 abstract class AbstractCommandHandler : ILuaStaticDecl by InitGenerated.AbstractCommandHandler_LuaGenerated {
     val subCommands = mutableListOf<AbstractCommandHandler>()
 
+    /**
+     * 여기에서 설정한 id를 register_endpoint를 통해 등록할 수 있습니다.
+     * @param of endpoint id
+     */
     @LuaFunction("set_endpoint")
     fun setEndpoint(of: String) {
         endpoint = ResourceLocation(Aris.MOD_ID, of)
@@ -140,7 +168,6 @@ abstract class AbstractCommandHandler : ILuaStaticDecl by InitGenerated.Abstract
                     task.coroutine.setField(-2, rl.path)
             2
         }
-        // TODO: Process here
     }
 }
 

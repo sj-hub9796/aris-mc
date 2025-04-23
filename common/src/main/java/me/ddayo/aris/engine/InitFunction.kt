@@ -11,6 +11,10 @@ import net.minecraft.world.item.Item
 
 @LuaProvider(InitEngine.PROVIDER, library = "aris.init")
 object InitFunction {
+    /**
+     * 새로운 아이템을 추가합니다.
+     * @param key 추가할 아이템 id
+     */
     @LuaFunction("create_item")
     fun registerItem(key: String) {
         Registry.register(
