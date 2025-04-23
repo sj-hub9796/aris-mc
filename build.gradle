@@ -1,3 +1,9 @@
+import groovy.json.JsonSlurper
+
+import java.net.http.HttpClient
+import java.net.http.HttpRequest
+import java.net.http.HttpResponse
+
 buildscript {
     ext.kotlin_version = '2.0.20'
     repositories {
@@ -67,4 +73,120 @@ repositories {
 }
 dependencies {
     implementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
+}
+
+
+// Configurations
+ext.directoriesToUpload = ['common/build/generated/ksp/main/resources']  // List of directories
+ext.gistDesc = 'Lua functions for aris'
+ext.gistIsPublic = true // true → public gist
+ext.token = project.github_token
+ext.user = 'dayo05'  // Set your GitHub username here
+
+if (!token) {
+    throw new GradleException('Set a personal access token in env var GITHUB_TOKEN')
+}
+
+// Function to find Gist ID by name
+def findGistIdByName(gistName) {
+    def url = "https://api.github.com/users/$user/gists"  // Fetch gists for the user
+    def request = HttpRequest.newBuilder()
+            .uri(URI.create(url))
+            .header("Authorization", "token $token")
+            .header("Accept", "application/vnd.github+json")
+            .GET()
+            .build()
+
+    def response = HttpClient.newHttpClient().send(request, HttpResponse.BodyHandlers.ofString())
+    println response.body()
+    println response.statusCode()
+    def gists = new JsonSlurper().parseText(response.body())
+
+    return gists.find { gist ->
+        gist.description.trim().contains(gistName.trim())
+    }?.id
+}
+
+// Task to upload files from multiple directories into a single Gist or update an existing Gist
+task uploadGists {
+    group = 'github'
+    description = 'Uploads all files from multiple directories into a single GitHub Gist or updates it if it exists'
+
+    doLast {
+        // Check if a Gist with the specified name exists
+        def gistId = findGistIdByName(gistDesc)
+
+        // Prepare the map to store files and their contents
+        def filesMap = [:]
+
+        // Iterate through each directory and process the files
+        directoriesToUpload.each { dirPath ->
+            def directoryToUpload = file(dirPath)
+            if (!directoryToUpload.exists() || !directoryToUpload.isDirectory()) {
+                println "Skipping invalid directory: $dirPath"
+                return
+            }
+
+            // Iterate through files in the directory
+            directoryToUpload.listFiles().each { fileToUpload ->
+                if (fileToUpload.isFile()) {
+                    def fileName = fileToUpload.name
+                    def content = fileToUpload.text
+                            .replace('\\', '\\\\')  // Escape backslashes
+                            .replace('"', '\\"')    // Escape double quotes
+                            .replace('\n', '\\n')   // Escape newlines
+
+                    filesMap[fileName] = [content: content]
+                }
+            }
+        }
+
+        // Build JSON body for the Gist request
+        def body = """
+        {
+            "description": "$gistDesc",
+            "public": $gistIsPublic,
+            "files": {
+        """
+
+        filesMap.eachWithIndex { entry, index ->
+            body += """
+                "${entry.key}": {
+                    "content": "${entry.value.content}"
+                }
+            """
+            if (index < filesMap.size() - 1) {
+                body += ","
+            }
+        }
+
+        body += """
+            }
+        }
+        """
+
+        // Determine the URI based on whether the Gist exists (PATCH for update, POST for create)
+        def uri = gistId ? URI.create("https://api.github.com/gists/$gistId") : URI.create("https://api.github.com/gists")
+        def httpMethod = gistId ? 'PATCH' : 'POST' // Use PATCH to update the existing Gist
+
+        // Make the HTTP request to create or update the Gist
+        def request = HttpRequest.newBuilder()
+                .uri(uri)
+                .header("Authorization", "token $token")
+                .header("Accept", "application/vnd.github+json")
+                .method(httpMethod, HttpRequest.BodyPublishers.ofString(body))
+                .build()
+
+        // Send the request and get the response
+        def response = HttpClient.newHttpClient().send(request, HttpResponse.BodyHandlers.ofString())
+
+        // Output the result
+        if (gistId) {
+            println "Updated Gist '$gistDesc' (ID: $gistId)"
+        } else {
+            println "Created new Gist '$gistDesc'"
+        }
+        println "Status code : ${response.statusCode()}"
+        println "Response    : ${response.body()}"
+    }
 }
