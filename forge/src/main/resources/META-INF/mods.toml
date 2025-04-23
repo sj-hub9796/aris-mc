@@ -16,7 +16,7 @@ Project Aris
 [[dependencies.aris]]
 modId = "forge"
 mandatory = true
-versionRange = "[47,)"
+versionRange = "[47.3.3,)"
 ordering = "NONE"
 side = "BOTH"
 
