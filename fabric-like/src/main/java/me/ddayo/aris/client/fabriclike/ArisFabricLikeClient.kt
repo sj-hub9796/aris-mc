@@ -37,11 +37,7 @@ object ArisFabricLikeClient {
         }
 
         HudRenderCallback.EVENT.register { graphics, delta ->
-            RenderUtil.renderer.loadMatrix(graphics) {
-                ClientInGameEngine.INSTANCE?.enabledHud?.mutableForEach {
-                    it.render(this, 0.0, 0.0, delta)
-                }
-            }
+            ClientInGameEngine.INSTANCE?.renderHud(graphics, delta)
         }
         ClientNetworking.register()
     }

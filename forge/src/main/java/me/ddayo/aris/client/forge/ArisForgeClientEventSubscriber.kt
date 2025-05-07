@@ -61,10 +61,6 @@ object ArisForgeClientEvents {
     fun onRenderGuiOverlay(event: RenderGuiOverlayEvent.Pre) {
         val graphics: GuiGraphics = event.guiGraphics
         val delta = event.partialTick
-        RenderUtil.renderer.loadMatrix(graphics) {
-            ClientInGameEngine.INSTANCE?.enabledHud?.mutableForEach {
-                it.render(this, 0.0, 0.0, delta)
-            }
-        }
+        ClientInGameEngine.INSTANCE?.renderHud(graphics, delta)
     }
 }

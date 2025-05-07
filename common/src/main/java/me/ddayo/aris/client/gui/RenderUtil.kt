@@ -364,6 +364,7 @@ abstract class RenderUtil {
 
     fun loadMatrix(graphics: GuiGraphics, f: RenderUtil.() -> Unit) {
         this.matrix = graphics.pose()
+        this.graphics = graphics
         this.f()
     }
 

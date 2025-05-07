@@ -4,17 +4,26 @@ import com.mojang.brigadier.CommandDispatcher
 import com.mojang.brigadier.arguments.DoubleArgumentType
 import com.mojang.brigadier.arguments.StringArgumentType
 import me.ddayo.aris.Aris
+import me.ddayo.aris.engine.InGameEngine
 import me.ddayo.aris.engine.command.CommandBuilderFunctions
+import me.ddayo.aris.engine.wrapper.LuaItemStack
+import me.ddayo.aris.engine.wrapper.LuaServerPlayer
 import me.ddayo.aris.forge.ArisForgeNetworking.sendDataPacket
 import me.ddayo.aris.forge.ArisForgeNetworking.sendOpenScriptPacket
+import me.ddayo.aris.util.ListExtensions.mutableForEach
 import net.minecraft.commands.CommandSourceStack
 import net.minecraft.commands.arguments.EntityArgument
 import net.minecraft.commands.arguments.item.ItemArgument
 import net.minecraft.commands.Commands.argument
 import net.minecraft.commands.Commands.literal
+import net.minecraft.core.registries.BuiltInRegistries
+import net.minecraft.server.level.ServerPlayer
+import net.minecraft.world.InteractionResultHolder
 import net.minecraftforge.event.RegisterCommandsEvent
 import net.minecraftforge.event.TickEvent
 import net.minecraftforge.event.TickEvent.ServerTickEvent
+import net.minecraftforge.event.entity.living.LivingEntityUseItemEvent
+import net.minecraftforge.event.entity.player.PlayerInteractEvent
 import net.minecraftforge.event.server.ServerStartingEvent
 import net.minecraftforge.eventbus.api.SubscribeEvent
 import net.minecraftforge.fml.LogicalSide
@@ -27,6 +36,21 @@ object ArisForgeServerEventSubscriber {
     fun onServerStarting(event: ServerStartingEvent) {
         // Initialize ARIS server
         Aris.onServerStart(event.server)
+    }
+
+    @SubscribeEvent
+    fun onItemUse(event: PlayerInteractEvent.RightClickItem) {
+        val player = event.entity as? ServerPlayer ?: return
+        val stack = player.getItemInHand(event.hand)
+        InGameEngine.INSTANCE?.itemUseHook?.let {
+            it[BuiltInRegistries.ITEM.getKey(stack.item).toString()]?.let {
+                val sp = LuaServerPlayer(player as ServerPlayer)
+                val lis = LuaItemStack(stack)
+                it.mutableForEach {
+                    it.callAsTask(sp, lis)
+                }
+            }
+        }
     }
 
     @SubscribeEvent

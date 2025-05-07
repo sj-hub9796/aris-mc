@@ -1,11 +1,14 @@
 package me.ddayo.aris.engine.client
 
+import com.mojang.blaze3d.systems.RenderSystem
 import me.ddayo.aris.LuaFunc
 import me.ddayo.aris.client.KeyBindingHelper
 import me.ddayo.aris.client.gui.HudRenderer
+import me.ddayo.aris.client.gui.RenderUtil
 import me.ddayo.aris.lua.glue.ClientInGameOnlyGenerated
 import me.ddayo.aris.util.ListExtensions.mutableForEach
 import net.minecraft.client.KeyMapping
+import net.minecraft.client.gui.GuiGraphics
 import net.minecraft.resources.ResourceLocation
 import net.minecraft.world.item.ItemStack
 import party.iroiro.luajava.Lua
@@ -55,6 +58,17 @@ class ClientInGameEngine protected constructor(lua: Lua) : ClientMainEngine(lua)
     }
 
     val enabledHud = mutableListOf<HudRenderer>()
+
+    fun renderHud(graphics: GuiGraphics, delta: Float) {
+        RenderSystem.enableBlend()
+        RenderUtil.renderer.loadMatrix(graphics) {
+            fixScale(graphics.guiWidth(), graphics.guiHeight(), 1920, 1080) {
+                enabledHud.mutableForEach {
+                    it.render(this, 0.0, 0.0, delta)
+                }
+            }
+        }
+    }
 
     val packetFunctions = mutableMapOf<ResourceLocation, LuaFunc>()
     val clientStringData = mutableMapOf<String, String>()

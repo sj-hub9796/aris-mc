@@ -14,6 +14,7 @@ import net.minecraft.world.item.ItemStack
 import net.minecraft.world.level.Level
 
 class ScriptableItem(private val id: ResourceLocation, property: Properties) : Item(property) {
+    /*
     override fun use(
         level: Level,
         player: Player,
@@ -32,4 +33,5 @@ class ScriptableItem(private val id: ResourceLocation, property: Properties) : I
 
         return InteractionResultHolder.success(player.getItemInHand(interactionHand))
     }
+     */
 }

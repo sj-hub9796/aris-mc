@@ -50,53 +50,6 @@ class LuaServerPlayer(player: ServerPlayer) : LuaPlayerEntity(player), Coroutine
         }
 
     /**
-     * 플레이어를 특정 상대적인 위치로 텔레포트 시킵니다.
-     * @param x 이동시킬 x좌표의 상대적인 값
-     * @param y 이동시킬 y좌표의 상대적인 값
-     * @param z 이동시킬 z좌표의 상대적인 값
-     */
-    @LuaFunction("move_delta")
-    fun moveDelta(x: Double, y: Double, z: Double) {
-        player.teleportTo(player.x + x, player.y + y, player.z + z)
-    }
-
-    /**
-     * 플레이어를 특정 위치로 텔레포트 시킵니다.
-     * @param x 이동시킬 x좌표
-     * @param y 이동시킬 y좌표
-     * @param z 이동시킬 z좌표
-     */
-    @LuaFunction("move_to")
-    fun moveTo(x: Double, y: Double, z: Double) {
-        player.teleportTo(x, y, z)
-    }
-
-    /**
-     * 플레이어를 바라보는 위치를 기준으로 하는 상대적인 위치로 텔레포트 시킵니다.
-     * @param x 앞으로 이동할 칸수
-     * @param y 위로 이동할 칸수
-     * @param z 옆으로 이동할 칸수(+는 오른쪽을 의미)
-     */
-    @LuaFunction("move_delta_relative")
-    fun moveDeltaRelative(x: Double, y: Double, z: Double) {
-        val yawRad = Math.toRadians(player.yRot.toDouble())
-
-        // Forward vector (XZ plane only, ignoring pitch)
-        val forwardX = -sin(yawRad)
-        val forwardZ = cos(yawRad)
-
-        // Right vector (perpendicular to forward vector)
-        val rightX = cos(yawRad)
-        val rightZ = sin(yawRad)
-
-        // Calculate the new position
-        val newX = player.x + forwardX * x + rightX * z
-        val newY = player.y + y
-        val newZ = player.z + forwardZ * x + rightZ * z
-        moveTo(newX, newY, newZ)
-    }
-
-    /**
      * 채팅으로 텍스트 메시지를 전송
      * @param msg 전송할 텍스트
      */
