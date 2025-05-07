@@ -80,12 +80,12 @@ dependencies {
 ext.directoriesToUpload = ['common/build/generated/ksp/main/resources']  // List of directories
 ext.gistDesc = 'Lua functions for aris'
 ext.gistIsPublic = true // true → public gist
-ext.token = project.github_token
+if(!project.hasProperty("github_token")) {
+    logger.warn('Set a personal access token in env var GITHUB_TOKEN')
+}
+else ext.token = project.github_token
 ext.user = 'dayo05'  // Set your GitHub username here
 
-if (!token) {
-    throw new GradleException('Set a personal access token in env var GITHUB_TOKEN')
-}
 
 // Function to find Gist ID by name
 def findGistIdByName(gistName) {
