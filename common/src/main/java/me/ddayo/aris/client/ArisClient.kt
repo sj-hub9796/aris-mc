@@ -38,4 +38,15 @@ object ArisClient {
     fun onClientStart() {
         ClientMainEngine.createEngine(LuaJit())
     }
+
+    fun reloadEngine() {
+        ClientMainEngine.INSTANCE?.run {
+            ClientMainEngine.disposeEngine()
+            ClientMainEngine.createEngine(LuaJit())
+            ClientInGameEngine.INSTANCE?.run {
+                ClientInGameEngine.disposeEngine()
+                ClientInGameEngine.createEngine(LuaJit())
+            }
+        }
+    }
 }

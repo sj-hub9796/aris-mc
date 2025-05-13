@@ -1,7 +1,19 @@
 package me.ddayo.aris
 
+import com.mojang.brigadier.CommandDispatcher
+import com.mojang.brigadier.arguments.DoubleArgumentType
+import com.mojang.brigadier.arguments.StringArgumentType
 import me.ddayo.aris.engine.InGameEngine
 import me.ddayo.aris.engine.InitEngine
+import me.ddayo.aris.engine.command.CommandBuilderFunctions
+import me.ddayo.aris.networking.NetworkingExtensions.sendDataPacket
+import me.ddayo.aris.networking.NetworkingExtensions.sendReloadPacket
+import net.minecraft.commands.CommandBuildContext
+import net.minecraft.commands.CommandSourceStack
+import net.minecraft.commands.Commands.argument
+import net.minecraft.commands.Commands.literal
+import net.minecraft.commands.arguments.EntityArgument
+import net.minecraft.commands.arguments.item.ItemArgument
 import net.minecraft.server.MinecraftServer
 import party.iroiro.luajava.luajit.LuaJit
 
@@ -60,5 +72,73 @@ object Aris {
 
     fun onServerTick() {
         InGameEngine.INSTANCE?.loop()
+    }
+
+    fun reloadEngine() {
+        InGameEngine.INSTANCE?.run {
+            InGameEngine.disposeEngine()
+            InGameEngine.createEngine(LuaJit())
+        }
+    }
+
+    fun registerCommand(dispatcher: CommandDispatcher<CommandSourceStack>, registry: CommandBuildContext) {
+        dispatcher.register(
+            literal("aris")
+                .then(literal("reload")
+                    .executes {
+                        reloadEngine()
+                        server.playerList.players.forEach {
+                            it.sendReloadPacket()
+                        }
+                        1
+                    })
+                .then(
+                    literal("set_value")
+                        .then(
+                            argument("player", EntityArgument.players())
+                                .then(
+                                    argument("of", StringArgumentType.string())
+                                        .then(
+                                            literal("item")
+                                                .then(argument("item", ItemArgument.item(registry))
+                                                    .executes {
+                                                        val of = StringArgumentType.getString(it, "of")
+                                                        val item = ItemArgument.getItem(it, "item")
+                                                        EntityArgument.getPlayers(it, "player").forEach {
+                                                            it.sendDataPacket(of, item)
+                                                        }
+                                                        1
+                                                    })
+                                        )
+                                        .then(
+                                            literal("number")
+                                                .then(argument("number", DoubleArgumentType.doubleArg())
+                                                    .executes {
+                                                        val of = StringArgumentType.getString(it, "of")
+                                                        val num = DoubleArgumentType.getDouble(it, "number")
+                                                        EntityArgument.getPlayers(it, "player").forEach {
+                                                            it.sendDataPacket(of, num)
+                                                        }
+                                                        1
+                                                    })
+                                        )
+                                        .then(
+                                            literal("string")
+                                                .then(argument("string", StringArgumentType.string())
+                                                    .executes {
+                                                        val of = StringArgumentType.getString(it, "of")
+                                                        val str = StringArgumentType.getString(it, "string")
+                                                        EntityArgument.getPlayers(it, "player").forEach {
+                                                            it.sendDataPacket(of, str)
+                                                        }
+                                                        1
+                                                    })
+                                        )
+                                )
+                        )
+                )
+        )
+
+        CommandBuilderFunctions.register(dispatcher)
     }
 }

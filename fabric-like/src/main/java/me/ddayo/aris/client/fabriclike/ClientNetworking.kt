@@ -1,6 +1,7 @@
 package me.ddayo.aris.client.fabriclike
 
 import me.ddayo.aris.Aris
+import me.ddayo.aris.client.ArisClient
 import me.ddayo.aris.engine.client.ClientInGameEngine
 import me.ddayo.aris.engine.client.ClientMainEngine
 import me.ddayo.aris.engine.networking.S2CPacketHandler
@@ -12,25 +13,6 @@ import java.io.File
 
 object ClientNetworking {
     fun register() {
-        ClientPlayNetworking.registerGlobalReceiver(ResourceLocation(Aris.MOD_ID, "open_script")) { client, handler, packet, sender ->
-            val _operation = packet.readInt()
-            val _space = packet.readInt()
-            val _of = packet.readUtf()
-            val _name = packet.readUtf()
-
-            client.execute {
-                val operation = ServerNetworking.Operation.entries[_operation]
-                val space = ServerNetworking.EngineSpace.entries[_space]
-                val of = _of
-                val name = _name
-
-                val engine = when (space) {
-                    ServerNetworking.EngineSpace.GLOBAL -> ClientMainEngine.INSTANCE
-                    ServerNetworking.EngineSpace.IN_GAME -> ClientInGameEngine.INSTANCE
-                }
-                engine?.createTask(File("robots/functions", of), name.ifEmpty { null })
-            }
-        }
         ClientPlayNetworking.registerGlobalReceiver(ResourceLocation(Aris.MOD_ID, "sync_data")) { client, handler, packet, sender ->
             val of = packet.readUtf()
             val type = ServerNetworking.ScriptDataType.entries[packet.readByte().toInt()]
@@ -50,6 +32,13 @@ object ClientNetworking {
                 }
             }
         }
+
+        ClientPlayNetworking.registerGlobalReceiver(ResourceLocation(Aris.MOD_ID, "reload_engine")) { client, handler, buffer, sender ->
+            client.execute {
+                ArisClient.reloadEngine()
+            }
+        }
+
         ClientPlayNetworking.registerGlobalReceiver(ResourceLocation(Aris.MOD_ID, "generic_s2c")) { client, handler, buffer, sender ->
             val of = buffer.readResourceLocation()
             val packet = S2CPacketHandler.packets[of]!!
