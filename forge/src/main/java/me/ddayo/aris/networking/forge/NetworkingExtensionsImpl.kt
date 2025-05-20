@@ -1,4 +1,4 @@
-package me.ddayo.aris.networking.fabric
+package me.ddayo.aris.networking.forge
 
 import me.ddayo.aris.forge.ArisForgeNetworking
 import net.minecraft.server.level.ServerPlayer
