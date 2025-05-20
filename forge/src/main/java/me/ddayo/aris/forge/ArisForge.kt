@@ -2,13 +2,10 @@ package me.ddayo.aris.forge
 
 import me.ddayo.aris.Aris
 import me.ddayo.aris.client.ArisClient
-import net.minecraft.world.item.Item
 import net.minecraftforge.eventbus.api.Event
 import net.minecraftforge.eventbus.api.SubscribeEvent
-import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent
+import net.minecraftforge.fml.event.lifecycle.FMLConstructModEvent
 import net.minecraftforge.fml.loading.FMLEnvironment
-import net.minecraftforge.registries.DeferredRegister
-import net.minecraftforge.registries.ForgeRegistries
 import org.apache.logging.log4j.LogManager
 import thedarkcolour.kotlinforforge.forge.MOD_CONTEXT
 
@@ -22,13 +19,17 @@ class ArisForge {
     fun regA(e: AEvent) {
         LogManager.getLogger().info("test")
     }
-    init {
-        Aris.init()
-        if (FMLEnvironment.dist.isClient)
-            ArisClient.init()
 
+    init {
         MOD_CONTEXT.getKEventBus().post(AEvent())
-        // Register custom networking handlers
+        MOD_CONTEXT.getKEventBus().register { it: FMLConstructModEvent ->
+            it.enqueueWork {
+                Aris.init()
+                if (FMLEnvironment.dist.isClient)
+                    ArisClient.init()
+            }
+        }
+
         ArisForgeNetworking.register()
     }
 }
