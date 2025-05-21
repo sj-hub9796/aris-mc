@@ -17,6 +17,7 @@ import me.ddayo.aris.luagen.LuaFunction
 import me.ddayo.aris.luagen.LuaProvider
 import net.minecraft.commands.CommandSourceStack
 import net.minecraft.commands.Commands
+import net.minecraft.commands.arguments.EntityArgument
 import net.minecraft.resources.ResourceLocation
 
 
@@ -72,6 +73,19 @@ object CommandBuilderFunctions {
         override fun retrieve() = Commands.argument(of, DoubleArgumentType.doubleArg())
         override fun write(ctx: CommandContext<CommandSourceStack>, builder: CommandBuilder) {
             builder.inner[rl] = DoubleArgumentType.getDouble(ctx, of)
+        }
+    }
+    /**
+     * 플레이어 인수를 추가합니다.
+     * @of 추가할 플레이어 인수 이름
+     * @return 여기에서 획득한 값을 커멘드 핸들러에 append해야합니다.
+     */
+    @LuaFunction("player_arg")
+    fun playerArg(of: String) = object : AbstractCommandHandler() {
+        val rl = ResourceLocation(Aris.MOD_ID, of)
+        override fun retrieve() = Commands.argument(of, EntityArgument.player())
+        override fun write(ctx: CommandContext<CommandSourceStack>, builder: CommandBuilder) {
+            builder.inner[rl] = LuaServerPlayer(EntityArgument.getPlayer(ctx, of))
         }
     }
 
