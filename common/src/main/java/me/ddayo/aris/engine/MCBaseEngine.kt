@@ -1,6 +1,6 @@
 package me.ddayo.aris.engine
 
-import me.ddayo.aris.LuaEngine
+import me.ddayo.aris.luagen.LuaEngine
 import me.ddayo.aris.lua.glue.LuaGenerated
 import org.apache.logging.log4j.LogManager
 import party.iroiro.luajava.Lua

@@ -1,7 +1,7 @@
 package me.ddayo.aris.engine.wrapper
 
-import me.ddayo.aris.ILuaStaticDecl
-import me.ddayo.aris.LuaFunc
+import me.ddayo.aris.luagen.ILuaStaticDecl
+import me.ddayo.aris.luagen.LuaFunc
 import me.ddayo.aris.engine.InGameEngine
 import me.ddayo.aris.engine.wrapper.LuaServerPlayerFunctions.coroutine
 import me.ddayo.aris.lua.glue.InGameGenerated

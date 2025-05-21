@@ -1,6 +1,6 @@
 package me.ddayo.aris.engine.client.functions
 
-import me.ddayo.aris.LuaFunc
+import me.ddayo.aris.luagen.LuaFunc
 import me.ddayo.aris.client.gui.BaseComponent
 import me.ddayo.aris.client.gui.BaseRectComponent
 import me.ddayo.aris.client.gui.ImageResource

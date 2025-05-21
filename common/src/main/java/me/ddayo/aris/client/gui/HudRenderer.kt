@@ -1,7 +1,6 @@
 package me.ddayo.aris.client.gui
 
-import me.ddayo.aris.ILuaStaticDecl
-import me.ddayo.aris.LuaEngine
+import me.ddayo.aris.luagen.ILuaStaticDecl
 import me.ddayo.aris.engine.client.ClientInGameEngine
 import me.ddayo.aris.engine.client.ClientMainEngine
 import me.ddayo.aris.lua.glue.LuaClientOnlyGenerated

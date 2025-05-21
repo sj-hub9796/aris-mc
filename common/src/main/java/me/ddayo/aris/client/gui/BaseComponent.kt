@@ -1,7 +1,7 @@
 package me.ddayo.aris.client.gui
 
-import me.ddayo.aris.ILuaStaticDecl
-import me.ddayo.aris.LuaFunc
+import me.ddayo.aris.luagen.ILuaStaticDecl
+import me.ddayo.aris.luagen.LuaFunc
 import me.ddayo.aris.engine.client.ClientMainEngine
 import me.ddayo.aris.client.gui.element.IClickableElement
 import me.ddayo.aris.luagen.LuaFunction

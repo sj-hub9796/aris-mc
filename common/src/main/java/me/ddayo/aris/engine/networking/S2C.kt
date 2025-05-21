@@ -2,8 +2,8 @@ package me.ddayo.aris.engine.networking
 
 import dev.architectury.injectables.annotations.ExpectPlatform
 import me.ddayo.aris.Aris
-import me.ddayo.aris.ILuaStaticDecl
-import me.ddayo.aris.LuaFunc
+import me.ddayo.aris.luagen.ILuaStaticDecl
+import me.ddayo.aris.luagen.LuaFunc
 import me.ddayo.aris.engine.InGameEngine
 import me.ddayo.aris.engine.InitEngine
 import me.ddayo.aris.engine.client.ClientInGameEngine

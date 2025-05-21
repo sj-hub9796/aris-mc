@@ -7,8 +7,8 @@ import com.mojang.brigadier.builder.ArgumentBuilder
 import com.mojang.brigadier.builder.LiteralArgumentBuilder
 import com.mojang.brigadier.context.CommandContext
 import me.ddayo.aris.Aris
-import me.ddayo.aris.ILuaStaticDecl
-import me.ddayo.aris.LuaFunc
+import me.ddayo.aris.luagen.ILuaStaticDecl
+import me.ddayo.aris.luagen.LuaFunc
 import me.ddayo.aris.engine.InGameEngine
 import me.ddayo.aris.engine.InitEngine
 import me.ddayo.aris.engine.wrapper.LuaServerPlayer

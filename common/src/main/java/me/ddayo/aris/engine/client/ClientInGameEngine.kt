@@ -1,7 +1,7 @@
 package me.ddayo.aris.engine.client
 
 import com.mojang.blaze3d.systems.RenderSystem
-import me.ddayo.aris.LuaFunc
+import me.ddayo.aris.luagen.LuaFunc
 import me.ddayo.aris.client.KeyBindingHelper
 import me.ddayo.aris.client.gui.HudRenderer
 import me.ddayo.aris.client.gui.RenderUtil

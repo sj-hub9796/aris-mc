@@ -1,8 +1,8 @@
 package me.ddayo.aris.client.gui.element
 
 import com.mojang.blaze3d.systems.RenderSystem
-import me.ddayo.aris.ILuaStaticDecl
-import me.ddayo.aris.LuaMultiReturn
+import me.ddayo.aris.luagen.ILuaStaticDecl
+import me.ddayo.aris.luagen.LuaMultiReturn
 import me.ddayo.aris.engine.client.ClientMainEngine
 import me.ddayo.aris.client.gui.BaseRectComponent
 import me.ddayo.aris.client.gui.ImageResource

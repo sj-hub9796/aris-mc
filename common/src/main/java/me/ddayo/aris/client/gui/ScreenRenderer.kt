@@ -1,7 +1,7 @@
 package me.ddayo.aris.client.gui
 
 import com.mojang.blaze3d.systems.RenderSystem
-import me.ddayo.aris.ILuaStaticDecl
+import me.ddayo.aris.luagen.ILuaStaticDecl
 import me.ddayo.aris.engine.client.ClientMainEngine
 import me.ddayo.aris.lua.glue.LuaClientOnlyGenerated
 import me.ddayo.aris.luagen.LuaFunction

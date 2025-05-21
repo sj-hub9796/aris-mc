@@ -1,6 +1,6 @@
 package me.ddayo.aris.engine
 
-import me.ddayo.aris.LuaFunc
+import me.ddayo.aris.luagen.LuaFunc
 import me.ddayo.aris.lua.glue.InGameGenerated
 import net.minecraft.resources.ResourceLocation
 import party.iroiro.luajava.Lua

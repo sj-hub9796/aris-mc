@@ -1,7 +1,7 @@
 package me.ddayo.aris.engine
 
 import me.ddayo.aris.Aris
-import me.ddayo.aris.LuaFunc
+import me.ddayo.aris.luagen.LuaFunc
 import me.ddayo.aris.engine.wrapper.LuaMobEffectInstance
 import me.ddayo.aris.luagen.LuaFunction
 import me.ddayo.aris.luagen.LuaProvider

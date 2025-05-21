@@ -44,13 +44,15 @@ dependencies {
     compileOnly "org.jetbrains.kotlin:kotlin-stdlib-jdk8"
 
     forgeRuntimeLibrary("me.ddayo:aris.luagen") { transitive false }
-    implementation "me.ddayo:aris.luagen"
+    compileOnly "me.ddayo:aris.luagen"
     shadowCommon("me.ddayo:aris.luagen") { transitive false }
     forgeRuntimeLibrary 'party.iroiro.luajava:luajit-platform:4.0.2:natives-desktop'
     runtimeOnly 'party.iroiro.luajava:luajit-platform:4.0.2:natives-desktop'
     shadowCommon 'party.iroiro.luajava:luajit-platform:4.0.2:natives-desktop'
     implementation 'thedarkcolour:kotlinforforge:4.11.0'
-    shadowCommon "party.iroiro.luajava:luajit:4.0.2"
+    compileOnly 'party.iroiro.luajava:luajit:4.0.2'
+    shadowCommon 'party.iroiro.luajava:luajit:4.0.2'
+    forgeRuntimeLibrary 'party.iroiro.luajava:luajit:4.0.2'
 }
 
 processResources {

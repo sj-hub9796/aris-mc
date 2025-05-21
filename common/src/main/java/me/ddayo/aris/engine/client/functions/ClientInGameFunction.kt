@@ -1,10 +1,9 @@
 package me.ddayo.aris.engine.client.functions
 
-import me.ddayo.aris.LuaFunc
+import me.ddayo.aris.luagen.LuaFunc
 import me.ddayo.aris.client.gui.HudRenderer
 import me.ddayo.aris.engine.wrapper.LuaItemStack
 import me.ddayo.aris.engine.client.ClientInGameEngine
-import me.ddayo.aris.engine.networking.PacketDeclaration
 import me.ddayo.aris.luagen.LuaFunction
 import me.ddayo.aris.luagen.LuaProvider
 import me.ddayo.aris.luagen.RetrieveEngine

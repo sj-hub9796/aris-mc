@@ -1,23 +1,19 @@
 package me.ddayo.aris.engine.wrapper
 
 import me.ddayo.aris.Aris
-import me.ddayo.aris.CoroutineProvider
-import me.ddayo.aris.ILuaStaticDecl
-import me.ddayo.aris.LuaFunc
+import me.ddayo.aris.luagen.CoroutineProvider
+import me.ddayo.aris.luagen.ILuaStaticDecl
+import me.ddayo.aris.luagen.LuaFunc
 import me.ddayo.aris.engine.InGameEngine
 import me.ddayo.aris.lua.glue.InGameGenerated
 import me.ddayo.aris.luagen.LuaFunction
 import me.ddayo.aris.luagen.LuaProperty
 import me.ddayo.aris.luagen.LuaProvider
 import net.minecraft.core.registries.BuiltInRegistries
-import net.minecraft.core.registries.Registries
 import net.minecraft.network.chat.Component
 import net.minecraft.resources.ResourceLocation
 import net.minecraft.server.level.ServerPlayer
 import net.minecraft.world.InteractionHand
-import net.minecraft.world.effect.MobEffectInstance
-import kotlin.math.cos
-import kotlin.math.sin
 
 
 @LuaProvider(InGameEngine.PROVIDER, library = "aris.game")

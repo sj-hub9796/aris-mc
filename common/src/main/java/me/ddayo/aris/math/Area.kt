@@ -1,6 +1,6 @@
 package me.ddayo.aris.math
 
-import me.ddayo.aris.ILuaStaticDecl
+import me.ddayo.aris.luagen.ILuaStaticDecl
 import me.ddayo.aris.lua.glue.LuaGenerated
 import me.ddayo.aris.math.Point.Companion.with
 import me.ddayo.aris.luagen.LuaFunction
