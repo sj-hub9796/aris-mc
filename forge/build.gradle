@@ -107,3 +107,243 @@ repositories {
 kotlin {
     jvmToolchain(17)
 }
+
+// SJhub start - custom mc client for fix native lib loading issue
+import groovy.json.JsonSlurper
+
+ext {
+    mcVersion = "1.20.1"
+    mcLibrariesDir = file("aris_run/libraries")
+    mcAssetsDir = file("aris_run/assets")
+    mcNativesDir = file("aris_run/natives")
+}
+
+tasks.register("downloadMinecraftDependencies") {
+    group = "aris"
+    description = "Download all Minecraft ${mcVersion} dependencies for Aris Client."
+
+    doLast {
+        println "=== Downloading Minecraft ${mcVersion} Dependencies ==="
+
+        def versionData = getVersionData(mcVersion)
+        def totalLibraries = versionData.libraries.size()
+        def downloaded = 0
+
+        versionData.libraries.eachWithIndex { library, index ->
+            print "\r[ARIS] Downloading libraries: ${index + 1}/${totalLibraries}"
+
+            if (library.downloads?.artifact) {
+                downloadArtifact(library.downloads.artifact, mcLibrariesDir)
+            }
+
+            if (library.downloads?.classifiers) {
+                def classifier = getOsClassifier()
+                if (library.downloads.classifiers[classifier]) {
+                    def nativeDir = library.downloads.classifiers[classifier]
+                    downloadArtifact(nativeDir, mcLibrariesDir)
+
+                    extractNatives(new File(mcLibrariesDir, nativeDir.path), mcNativesDir)
+                }
+            }
+
+            if (library.rules) {
+                if (!checkRules(library.rules)) {
+                    return
+                }
+            }
+        }
+
+        println "\n[ARIS] Libraries downloaded!"
+
+        if (versionData.downloads?.client) {
+            def clientJar = new File(mcLibrariesDir, "net/minecraft/client/${mcVersion}/client-${mcVersion}.jar")
+            clientJar.parentFile.mkdirs()
+
+            println "[ARIS] Downloading client JAR..."
+            new URL(versionData.downloads.client.url).withInputStream { input ->
+                clientJar.withOutputStream { output ->
+                    output << input
+                }
+            }
+            println "[ARIS] Client JAR downloaded!"
+        }
+
+        downloadAssets(versionData)
+
+        println "\n=== Download Complete ==="
+        println "[ARIS] Libraries: ${mcLibrariesDir.absolutePath}"
+        println "[ARIS] Assets: ${mcAssetsDir.absolutePath}"
+        println "[ARIS] Natives: ${mcNativesDir.absolutePath}"
+    }
+}
+
+static def getVersionData(version) {
+    def manifestUrl = 'https://launchermeta.mojang.com/mc/game/version_manifest_v2.json'
+    def manifest = new JsonSlurper().parse(new URL(manifestUrl))
+    def versionInfo = manifest.versions.find { it.id == version }
+
+    if (!versionInfo) {
+        throw new GradleException("Version ${version} not found!")
+    }
+
+    return new JsonSlurper().parse(new URL(versionInfo.url))
+}
+
+static def downloadArtifact(artifact, baseDir) {
+    def targetFile = new File(baseDir, artifact.path)
+
+    if (!targetFile.exists()) {
+        targetFile.parentFile.mkdirs()
+        new URL(artifact.url).withInputStream { input ->
+            targetFile.withOutputStream { output ->
+                output << input
+            }
+        }
+    }
+}
+
+def extractNatives(zipFile, targetDir) {
+    targetDir.mkdirs()
+
+    ant.unzip(src: zipFile, dest: targetDir) {
+        patternset {
+            exclude(name: "META-INF/")
+        }
+    }
+}
+
+static def checkRules(rules) {
+    def allow = false
+
+    rules.each { rule ->
+        if (rule.action == "allow") {
+            if (!rule.os || checkOs(rule.os)) {
+                allow = true
+            }
+        } else if (rule.action == "disallow") {
+            if (!rule.os || checkOs(rule.os)) {
+                allow = false
+            }
+        }
+    }
+
+    return allow
+}
+
+static def checkOs(osRule) {
+    def currentOs = System.getProperty("os.name").toLowerCase()
+
+    if (osRule.name == "windows" && currentOs.contains("win")) return true
+    if (osRule.name == "osx" && currentOs.contains("mac")) return true
+    if (osRule.name == "linux" && currentOs.contains("linux")) return true
+
+    return false
+}
+
+def downloadAssets(versionData) {
+    def assetIndex = versionData.assetIndex
+    def indexFile = new File(mcAssetsDir, "indexes/${assetIndex.id}.json")
+    indexFile.parentFile.mkdirs()
+
+    println "[ARIS] Downloading asset index: ${assetIndex.id}"
+    new URL(assetIndex.url).withInputStream { input ->
+        indexFile.withOutputStream { output ->
+            output << input
+        }
+    }
+
+    def indexData = new JsonSlurper().parse(indexFile)
+    def objectsDir = new File(mcAssetsDir, "objects")
+    def totalAssets = indexData.objects.size()
+    def downloadedAssets = 0
+
+    println "[ARIS] Downloading ${totalAssets} asset files..."
+
+    indexData.objects.each { name, assetInfo ->
+        def hash = assetInfo.hash
+        def subdir = hash.substring(0, 2)
+        def targetFile = new File(objectsDir, "${subdir}/${hash}")
+
+        if (!targetFile.exists()) {
+            targetFile.parentFile.mkdirs()
+            def url = "https://resources.download.minecraft.net/${subdir}/${hash}"
+
+            try {
+                new URL(url).withInputStream { input ->
+                    targetFile.withOutputStream { output ->
+                        output << input
+                    }
+                }
+            } catch (Exception e) {
+                println "\n[ARIS] Failed to download asset: ${name} - ${e.message}"
+            }
+        }
+
+        downloadedAssets++
+        if (downloadedAssets % 100 == 0 || downloadedAssets == totalAssets) {
+            print "\r[ARIS] Progress: ${downloadedAssets}/${totalAssets} assets"
+        }
+    }
+
+    println "\n[ARIS] Assets download complete!"
+}
+
+static def getOsClassifier() {
+    def os = System.getProperty("os.name").toLowerCase()
+    if (os.contains("win")) return "natives-windows"
+    else if (os.contains("mac")) return "natives-macos"
+    else if (os.contains("linux")) return "natives-linux"
+    else return "natives-linux"
+}
+
+tasks.register("remapClientJar", JavaExec) {
+    group = "aris"
+    classpath = files("libs/McDeob-3.3.0.jar")
+
+    args = [
+            "--version", "${mcVersion}",
+            "--type", "client"
+    ]
+
+    def outputJar = new File("deobf-work", "remapped_client_${mcVersion}.jar")
+    println "[ARIS] Client Remap Done!"
+    outputs.files(outputJar)
+}
+
+tasks.register("arisClient", JavaExec) {
+    group = "aris"
+
+    dependsOn setupAris
+    // TODO: make depends on main source jar, and copy jar into mods dir.
+
+    workingDir = file('aris_run')
+    classpath = files(tasks.named("remapClientJar").get().outputs.files) +
+            fileTree("aris_run/libraries") {
+                include "**/*.jar"
+            }
+    mainClass = 'net.minecraft.client.main.Main'
+
+    args = [
+            "--username", "ArisDev",
+            "--version", "1.20.1",
+            "--gameDir", ".",
+            "--accessToken", "0",
+            "--assetIndex", "1.20",
+            "--uuid", UUID.randomUUID().toString(),
+    ]
+
+    jvmArgs = [
+            "-Xmx2G",
+            "-Xms2G",
+    ]
+}
+
+tasks.register("setupAris") {
+    group = "aris"
+
+    dependsOn downloadMinecraftDependencies
+    dependsOn remapClientJar
+    // TODO: install & setup forge?
+}
+
+// SJhub end - custom mc client for fix native lib loading issue
