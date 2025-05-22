@@ -18,3 +18,5 @@ classes/
 .settings
 *.launch
 private/
+aris_run/
+deobf-work/
