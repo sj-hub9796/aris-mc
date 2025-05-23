@@ -111,11 +111,23 @@ kotlin {
 // SJhub start - custom mc client for fix native lib loading issue
 import groovy.json.JsonSlurper
 
+static def getForgeVersionId(forgeVersion) {
+    def parts = forgeVersion.split("-")
+    if (parts.length >= 2) {
+        return "${parts[0]}-forge-${parts[1]}"
+    }
+    return forgeVersion
+}
+
 ext {
     mcVersion = "1.20.1"
     mcLibrariesDir = file("aris_run/libraries")
     mcAssetsDir = file("aris_run/assets")
     mcNativesDir = file("aris_run/natives")
+    mcVersionDir = file("aris_run/versions")
+    forgeVersion = "${project.forge_version}"
+    forgeInstallerDir = file("forge-installer")
+    forgeVersionId = getForgeVersionId(forgeVersion)
 }
 
 tasks.register("downloadMinecraftDependencies") {
@@ -156,7 +168,7 @@ tasks.register("downloadMinecraftDependencies") {
         println "\n[ARIS] Libraries downloaded!"
 
         if (versionData.downloads?.client) {
-            def clientJar = new File(mcLibrariesDir, "net/minecraft/client/${mcVersion}/client-${mcVersion}.jar")
+            def clientJar = new File(mcVersionDir, "${mcVersion}/${mcVersion}.jar")
             clientJar.parentFile.mkdirs()
 
             println "[ARIS] Downloading client JAR..."
@@ -296,54 +308,219 @@ static def getOsClassifier() {
     else return "natives-linux"
 }
 
-tasks.register("remapClientJar", JavaExec) {
+tasks.register("downloadForgeInstaller") {
     group = "aris"
-    classpath = files("libs/McDeob-3.3.0.jar")
 
-    args = [
-            "--version", "${mcVersion}",
-            "--type", "client"
-    ]
+    def installerFile = new File(forgeInstallerDir, "forge-${forgeVersion}-installer.jar")
 
-    def outputJar = new File("deobf-work", "remapped_client_${mcVersion}.jar")
-    println "[ARIS] Client Remap Done!"
-    outputs.files(outputJar)
+    doLast {
+        forgeInstallerDir.mkdirs()
+
+        def forgeUrl = "https://maven.minecraftforge.net/net/minecraftforge/forge/${forgeVersion}/forge-${forgeVersion}-installer.jar"
+
+        if (!installerFile.exists()) {
+            println "[ARIS] Downloading Forge installer: ${forgeVersion}"
+            new URL(forgeUrl).withInputStream { input ->
+                installerFile.withOutputStream { output ->
+                    output << input
+                }
+            }
+            println "[ARIS] Forge installer downloaded!"
+        } else {
+            println "[ARIS] Forge installer already exists"
+        }
+    }
+
+    outputs.file(installerFile)
+}
+
+tasks.register("createLauncherProfile") {
+    group = "aris"
+
+    doLast {
+        def launcherProfiles = file("aris_run/launcher_profiles.json")
+
+        def profileData = [
+                profiles: [
+                        forge: [
+                                name: "forge",
+                                type: "custom",
+                                created: new Date().format("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'"),
+                                lastUsed: new Date().format("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'"),
+                                lastVersionId: mcVersion
+                        ]
+                ],
+                selectedProfile: "forge",
+                clientToken: UUID.randomUUID().toString(),
+                authenticationDatabase: [:]
+        ]
+
+        launcherProfiles.text = groovy.json.JsonOutput.prettyPrint(groovy.json.JsonOutput.toJson(profileData))
+        println "[ARIS] Created launcher_profiles.json"
+
+        def vanillaVersionDir = file("aris_run/versions/${mcVersion}")
+        vanillaVersionDir.mkdirs()
+
+        def versionData = getVersionData(mcVersion)
+        def vanillaVersionFile = new File(vanillaVersionDir, "${mcVersion}.json")
+        vanillaVersionFile.text = groovy.json.JsonOutput.prettyPrint(groovy.json.JsonOutput.toJson(versionData))
+
+        println "[ARIS] Created vanilla version JSON"
+    }
+}
+
+tasks.register("installForge", JavaExec) {
+    group = "aris"
+
+    def clientJar = file("aris_run/libraries/net/minecraftforge/forge/${forgeVersion}/forge-${forgeVersion}-client.jar")
+
+    onlyIf {
+        !clientJar.exists()
+    }
+
+    dependsOn downloadForgeInstaller, createLauncherProfile
+
+    workingDir = file('aris_run')
+
+    def installDir = file("aris_run").absolutePath
+    def installerJar = file("forge-installer/forge-${forgeVersion}-installer.jar")
+
+    classpath = files(installerJar)
+    mainClass = "net.minecraftforge.installer.SimpleInstaller"
+
+    args = ["--installClient", installDir]
+
+    doFirst {
+        println "[ARIS] Running Forge installer..."
+        println "[ARIS] This will generate SRG mappings and client files..."
+    }
+}
+
+def downloadForgeJars(targetDir) {
+    def forgeClientUrl = "https://maven.minecraftforge.net/net/minecraftforge/forge/${forgeVersion}/forge-${forgeVersion}-client.jar"
+    def forgeClientFile = new File(targetDir, "libraries/net/minecraftforge/forge/${forgeVersion}/forge-${forgeVersion}-client.jar")
+
+    if (!forgeClientFile.exists()) {
+        forgeClientFile.parentFile.mkdirs()
+        try {
+            println "[ARIS] Downloading Forge client JAR..."
+            new URL(forgeClientUrl).withInputStream { input ->
+                forgeClientFile.withOutputStream { output ->
+                    output << input
+                }
+            }
+        } catch (Exception e) {
+            println "[ARIS] Cannot found client JAR! " + e.getMessage()
+        }
+    }
+
+    def forgeUniversalUrl = "https://maven.minecraftforge.net/net/minecraftforge/forge/${forgeVersion}/forge-${forgeVersion}-universal.jar"
+    def forgeUniversalFile = new File(targetDir, "libraries/net/minecraftforge/forge/${forgeVersion}/forge-${forgeVersion}-universal.jar")
+
+    if (!forgeUniversalFile.exists()) {
+        try {
+            println "[ARIS] Downloading Forge universal JAR..."
+            new URL(forgeUniversalUrl).withInputStream { input ->
+                forgeUniversalFile.withOutputStream { output ->
+                    output << input
+                }
+            }
+        } catch (Exception e) {
+            println "[ARIS] Note: Universal JAR not found, this is normal for newer versions"
+        }
+    }
 }
 
 tasks.register("arisClient", JavaExec) {
     group = "aris"
 
-    dependsOn setupAris
-    // TODO: make depends on main source jar, and copy jar into mods dir.
+    dependsOn setupAris, copyArisModJar
 
     workingDir = file('aris_run')
-    classpath = files(tasks.named("remapClientJar").get().outputs.files) +
-            fileTree("aris_run/libraries") {
-                include "**/*.jar"
-            }
-    mainClass = 'net.minecraft.client.main.Main'
 
-    args = [
-            "--username", "ArisDev",
-            "--version", "1.20.1",
-            "--gameDir", ".",
-            "--accessToken", "0",
-            "--assetIndex", "1.20",
-            "--uuid", UUID.randomUUID().toString(),
-    ]
+    def forgeVersionId = getForgeVersionId(forgeVersion)
+    def forgeJsonFile = file("aris_run/versions/${forgeVersionId}/${forgeVersionId}.json")
+    def forgeVersionData = new JsonSlurper().parse(forgeJsonFile)
 
-    jvmArgs = [
+    mainClass = forgeVersionData.mainClass
+
+    def allLibraries = fileTree("aris_run/libraries") {
+        include "**/*.jar"
+        exclude "**/ForgeAutoRenamingTool*.jar"
+        exclude "**/client-${mcVersion}*.jar"
+    }
+
+    classpath = allLibraries
+
+    def jvmArgs = []
+    def libraryDir = file("aris_run/libraries").absolutePath
+    def nativesDir = file("aris_run/natives").absolutePath
+
+    forgeVersionData.arguments.jvm.each { arg ->
+        def processedArg = arg
+                .replace('${library_directory}', libraryDir)
+                .replace('${classpath_separator}', File.pathSeparator)
+                .replace('${version_name}', forgeVersionId)
+
+        jvmArgs << processedArg
+    }
+
+    jvmArgs.addAll([
             "-Xmx2G",
             "-Xms2G",
-    ]
+            "-Djava.library.path=${nativesDir}"
+    ])
+
+    setJvmArgs(jvmArgs)
+
+    def gameArgs = []
+
+    def assetsDir = file("aris_run/assets").absolutePath
+
+    gameArgs.addAll([
+            "--username", "ArisDev",
+            "--version", forgeVersionId,
+            "--gameDir", ".",
+            "--accessToken", "0",
+            "--assetsDir", assetsDir,
+            "--assetIndex", "1.20",
+            "--uuid", UUID.randomUUID().toString()
+    ])
+
+    gameArgs.addAll(forgeVersionData.arguments.game)
+    args = gameArgs
 }
 
 tasks.register("setupAris") {
     group = "aris"
 
     dependsOn downloadMinecraftDependencies
-    dependsOn remapClientJar
-    // TODO: install & setup forge?
+    dependsOn installForge
+    doLast {
+        println "[ARIS] Setup complete! Forge ${forgeVersion} is ready."
+    }
+}
+
+tasks.register("cleanOldArisMods", Delete) {
+    group = "aris"
+
+    delete fileTree("aris_run/mods") {
+        include "aris*.jar"
+        include "kotlinforforge*.jar"
+    }
+}
+
+tasks.register("copyArisModJar", Copy) {
+    group = "aris"
+    dependsOn remapJar, cleanOldArisMods
+
+    from remapJar.archiveFile
+    into "aris_run/mods"
+
+    from configurations.runtimeClasspath.filter {
+        it.name.contains("kotlinforforge")
+    }
+    into "aris_run/mods"
 }
 
 // SJhub end - custom mc client for fix native lib loading issue
